@@ -1,25 +1,6 @@
-# OS files
+# Large/original video files - too big for GitHub
+videos/hero-robot.mp4
+videos/*-original.mp4
+videos/robot-demo-compressed.mp4
+videos/robot-demo2.mov
 .DS_Store
-Thumbs.db
-desktop.ini
-
-# SolidWorks source files (don't upload these — use .glb exports)
-*.sldprt
-*.sldasm
-*.slddrw
-*.SLDPRT
-*.SLDASM
-
-# Editor files
-*.swp
-*.swo
-*~
-.vscode/
-
-# Large uncompressed files
-*.avi
-*.mov
-*.mkv
-*.raw
-*.bmp
-*.tiff
