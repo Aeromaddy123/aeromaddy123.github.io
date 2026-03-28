@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>3D Model Test</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#060b14;color:#c8d1dc;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;padding:2rem;gap:1rem}
+h1{font-size:1.5rem;font-weight:800}
+h1 span{color:#2E86AB}
+.hint{font-size:0.75rem;color:#6b7d93}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:1000px;width:100%}
+.card{background:#0f1923;border:1px solid #1a2a3d;border-radius:16px;overflow:hidden}
+.card canvas{display:block}
+.label{padding:0.8rem;text-align:center}
+.label h3{color:#2E86AB;font-size:0.9rem}
+.label p{color:#3d4f63;font-size:0.7rem}
+#status{color:#2E86AB;font-size:0.8rem}
+</style>
+</head>
+<body>
+<h1>3D Model <span>Preview</span></h1>
+<p class="hint">Drag to rotate | Your actual GLB files rendered with Three.js</p>
+<p id="status">Loading Three.js...</p>
+<div class="grid">
+<div class="card"><div id="v1"></div><div class="label"><h3>Self-Balancing Robot</h3><p>robot.glb (1.7MB)</p></div></div>
+<div class="card"><div id="v2"></div><div class="label"><h3>JCB Assembly</h3><p>jcb.glb (3.9MB)</p></div></div>
+<div class="card"><div id="v3"></div><div class="label"><h3>Bionic Arm</h3><p>bionic-arm.glb (11MB)</p></div></div>
+<div class="card"><div id="v4"></div><div class="label"><h3>Robotic Arm</h3><p>robotic-arm.glb (13MB)</p></div></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+document.getElementById('status').textContent = 'Three.js loaded! Loading models...';
+
+function createViewer(id, url) {
+  const el = document.getElementById(id);
+  const w = el.clientWidth || 480;
+  const h = 350;
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0f1923);
+  const camera = new THREE.PerspectiveCamera(45, w/h, 0.01, 1000);
+  camera.position.set(0, 0, 3);
+  const renderer = new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(w, h);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  el.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+  const d = new THREE.DirectionalLight(0xffffff, 0.8);
+  d.position.set(5,5,5); scene.add(d);
+  const d2 = new THREE.DirectionalLight(0x2E86AB, 0.3);
+  d2.position.set(-3,-2,-3); scene.add(d2);
+
+  let drag=false, px=0, py=0, rx=0, ry=0, model=null;
+  renderer.domElement.addEventListener('mousedown',e=>{drag=true;px=e.clientX;py=e.clientY});
+  window.addEventListener('mouseup',()=>drag=false);
+  renderer.domElement.addEventListener('mousemove',e=>{
+    if(!drag)return;
+    ry+=(e.clientX-px)*0.01; rx+=(e.clientY-py)*0.01;
+    px=e.clientX; py=e.clientY;
+  });
+
+  const loader = new THREE.GLTFLoader();
+  loader.load(url, gltf=>{
+    model = gltf.scene;
+    const box = new THREE.Box3().setFromObject(model);
+    const sz = box.getSize(new THREE.Vector3());
+    const ct = box.getCenter(new THREE.Vector3());
+    const s = 2/Math.max(sz.x,sz.y,sz.z);
+    model.scale.setScalar(s);
+    model.position.sub(ct.multiplyScalar(s));
+    scene.add(model);
+    document.getElementById('status').textContent = 'Models loaded!';
+  });
+
+  let auto=0;
+  (function animate(){
+    requestAnimationFrame(animate);
+    auto+=0.005;
+    if(model){model.rotation.y=auto+ry;model.rotation.x=rx}
+    renderer.render(scene,camera);
+  })();
+}
+
+createViewer('v1','models/robot.glb');
+createViewer('v2','models/jcb.glb');
+createViewer('v3','models/bionic-arm.glb');
+createViewer('v4','models/robotic-arm.glb');
+</script>
+</body>
+</html>

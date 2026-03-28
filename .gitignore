@@ -1,0 +1,25 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# SolidWorks source files (don't upload these — use .glb exports)
+*.sldprt
+*.sldasm
+*.slddrw
+*.SLDPRT
+*.SLDASM
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+
+# Large uncompressed files
+*.avi
+*.mov
+*.mkv
+*.raw
+*.bmp
+*.tiff

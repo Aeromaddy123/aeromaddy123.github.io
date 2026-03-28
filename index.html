@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEROMADDY — Embedded Systems & Robotics Engineer | Custom PCB, Real-Time Control, Edge AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:'Inter',sans-serif;background:#060b14;color:#c8d1dc;line-height:1.6;overflow-x:hidden}
+:root{
+  --primary:#1A3C5E;--accent:#2E86AB;--accent-glow:rgba(46,134,171,0.4);
+  --bg:#060b14;--bg2:#0c1322;--bg3:#111d2e;--card:#0f1923;
+  --border:#1a2a3d;--text:#c8d1dc;--text2:#6b7d93;--text3:#3d4f63;
+}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
+
+/* ===== CURSOR GLOW ===== */
+.cursor-glow{position:fixed;width:600px;height:600px;border-radius:50%;pointer-events:none;z-index:0;
+  background:radial-gradient(circle,rgba(46,134,171,0.06) 0%,transparent 70%);
+  transform:translate(-50%,-50%);transition:transform 0.1s ease}
+
+/* ===== NAV ===== */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.2rem 3rem;
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(6,11,20,0.6);backdrop-filter:blur(30px);
+  border-bottom:1px solid rgba(26,42,61,0);transition:all 0.4s}
+nav.scrolled{border-bottom-color:var(--border);padding:0.8rem 3rem}
+.nav-logo{font-size:1.1rem;font-weight:800;letter-spacing:-1px;color:var(--accent);text-decoration:none}
+.nav-logo span{color:var(--text)}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:0.78rem;font-weight:600;
+  letter-spacing:1.5px;text-transform:uppercase;transition:color 0.3s;position:relative}
+.nav-links a:hover{color:var(--accent)}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1.5px;
+  background:var(--accent);transition:width 0.3s}
+.nav-links a:hover::after{width:100%}
+.nav-toggle{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer}
+
+/* ===== HERO ===== */
+#hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
+.hero-bg-grid{position:absolute;inset:0;opacity:0.04;
+  background-image:linear-gradient(var(--accent) 1px,transparent 1px),linear-gradient(90deg,var(--accent) 1px,transparent 1px);
+  background-size:80px 80px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{to{background-position:80px 80px}}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.15;animation:orbFloat 8s ease-in-out infinite alternate}
+.hero-orb-1{width:500px;height:500px;background:var(--accent);top:-100px;left:-100px}
+.hero-orb-2{width:400px;height:400px;background:var(--primary);bottom:-50px;right:-50px;animation-delay:2s}
+.hero-orb-3{width:300px;height:300px;background:#1e5a7e;top:40%;right:20%;animation-delay:4s;opacity:0.08}
+@keyframes orbFloat{to{transform:translate(40px,30px) scale(1.1)}}
+.hero-container{display:grid;grid-template-columns:0.8fr 1.4fr;gap:4rem;max-width:1600px;margin:0 auto;padding:0 3rem;position:relative;z-index:1;width:100%;align-items:center}
+.hero-content{display:flex;flex-direction:column}
+.hero-3d-viewer{position:relative;width:75%;aspect-ratio:0.75;overflow:visible;background:none;border:none;border-radius:0;box-shadow:none;margin:0 auto;transform:scale(1.4);transform-origin:center center}
+.hero-3d-viewer::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70%;height:70%;
+  background:radial-gradient(circle,rgba(245,240,232,0.35) 0%,rgba(232,223,213,0.18) 40%,transparent 70%);
+  border-radius:50%;pointer-events:none;z-index:0;filter:blur(50px)}
+.hero-3d-viewer canvas{position:relative;z-index:1}
+.hero-eyebrow{font-size:0.72rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--accent);margin-bottom:3rem;opacity:1;transform:translateY(0);
+  animation:fadeUp 0.8s 0.2s ease forwards;
+  display:flex;align-items:center;gap:1rem}
+.hero-eyebrow::before{content:'';width:40px;height:1.5px;background:var(--accent)}
+.hero-name{font-size:clamp(3rem,8vw,6.5rem);font-weight:900;line-height:0.95;letter-spacing:-3px;
+  margin-bottom:1.5rem;opacity:0;transform:translateY(30px);animation:fadeUp 0.8s 0.4s ease forwards}
+.hero-name .first{color:var(--text);display:block}
+.hero-name .last{color:var(--accent);display:block}
+.hero-desc{max-width:550px;font-size:1.05rem;color:var(--text2);font-weight:300;line-height:1.8;
+  margin-bottom:2.5rem;opacity:0;transform:translateY(20px);animation:fadeUp 0.8s 0.6s ease forwards}
+.hero-desc strong{color:var(--accent);font-weight:600}
+.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;opacity:0;transform:translateY(20px);animation:fadeUp 0.8s 0.8s ease forwards}
+.cta{padding:0.8rem 2rem;border-radius:6px;font-size:0.85rem;font-weight:700;text-decoration:none;
+  transition:all 0.3s;display:inline-flex;align-items:center;gap:0.6rem;letter-spacing:0.5px}
+.cta-fill{background:var(--accent);color:#fff;box-shadow:0 0 30px var(--accent-glow)}
+.cta-fill:hover{transform:translateY(-2px);box-shadow:0 0 50px var(--accent-glow)}
+.cta-ghost{border:1.5px solid var(--border);color:var(--text2);background:transparent}
+.cta-ghost:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.hero-stats{display:flex;gap:3.5rem;margin-top:4rem;padding-top:2.5rem;border-top:1px solid var(--border);
+  opacity:0;animation:fadeUp 0.8s 1s ease forwards}
+.h-stat-num{font-size:2.2rem;font-weight:900;color:var(--accent);font-family:'JetBrains Mono',monospace}
+.h-stat-label{font-size:0.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-top:0.2rem}
+.hero-scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:0.5rem;opacity:0;animation:fadeUp 0.8s 1.2s ease forwards}
+.hero-scroll-hint span{font-size:0.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:2px}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--accent),transparent);animation:scrollPulse 2s infinite}
+@keyframes scrollPulse{0%,100%{opacity:0.3;height:30px}50%{opacity:1;height:50px}}
+
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+
+/* ===== SECTION COMMON ===== */
+section{position:relative}
+.s-container{max-width:1200px;margin:0 auto;padding:0 3rem}
+.s-header{margin-bottom:4rem}
+.s-eyebrow{font-size:0.68rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--accent);margin-bottom:0.8rem;display:flex;align-items:center;gap:0.8rem}
+.s-eyebrow::before{content:'';width:30px;height:1.5px;background:var(--accent)}
+.s-title{font-size:clamp(2rem,5vw,3.2rem);font-weight:900;color:var(--text);letter-spacing:-1.5px;line-height:1.1}
+.s-title span{color:var(--accent)}
+
+/* ===== ABOUT ===== */
+#about{padding:8rem 0;background:var(--bg2)}
+.about-grid{display:grid;grid-template-columns:0.8fr 1.2fr;gap:5rem;align-items:center}
+.about-img-wrap{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:3/4}
+.about-img-wrap img{width:100%;height:100%;object-fit:cover}
+.about-img-placeholder{width:100%;height:100%;min-height:400px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--bg3),var(--bg));color:var(--text3);font-size:0.85rem;
+  border:1px dashed var(--border);border-radius:12px}
+.about-img-wrap::after{content:'';position:absolute;inset:0;border:1px solid var(--border);border-radius:12px;pointer-events:none}
+.about-text p{color:var(--text2);font-size:0.95rem;margin-bottom:1.2rem;font-weight:300}
+.about-text p strong{color:var(--accent);font-weight:600}
+.about-chips{display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:2rem}
+.about-chip{padding:0.4rem 1rem;border-radius:50px;font-size:0.72rem;font-weight:600;
+  background:rgba(46,134,171,0.08);border:1px solid rgba(46,134,171,0.2);color:var(--accent);
+  transition:all 0.3s}
+.about-chip:hover{background:rgba(46,134,171,0.15);transform:translateY(-2px)}
+
+/* ===== PROJECTS HORIZONTAL SCROLL ===== */
+#projects{padding:6rem 0 0}
+.projects-intro{padding-bottom:3rem}
+.scroll-hint{display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding-top:1.5rem;opacity:0.5;transition:opacity 0.3s}
+.scroll-hint:hover{opacity:1}
+.scroll-hint span{font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent)}
+.scroll-hint-arrow{display:flex;flex-direction:column;align-items:center;gap:0;line-height:1}
+.scroll-hint-arrow i{font-size:0.7rem;color:var(--accent);animation:bounceArrow 2s infinite}
+.scroll-hint-arrow i:nth-child(2){animation-delay:0.15s;opacity:0.5}
+@keyframes bounceArrow{0%,100%{transform:translateX(0);opacity:0.4}50%{transform:translateX(5px);opacity:1}}
+.h-scroll-wrapper{position:relative;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;cursor:grab}
+.h-scroll-wrapper::-webkit-scrollbar{display:none}
+.h-scroll-wrapper:active{cursor:grabbing}
+.h-scroll-track{display:inline-flex;gap:3rem;padding:2rem 3rem}
+.p-card{flex-shrink:0;width:85vw;max-width:900px;display:grid;grid-template-columns:1.1fr 1fr;
+  background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;
+  transition:all 0.4s;position:relative}
+.p-card:hover{border-color:var(--accent);box-shadow:0 0 60px rgba(46,134,171,0.08)}
+.p-media{position:relative;overflow:hidden;min-height:400px;background:var(--bg);
+  border-radius:16px 0 0 16px}
+
+.p-media img,.p-media video{width:100%;height:100%;object-fit:cover}
+.p-media canvas{position:relative;z-index:1;width:100%;height:100%;display:block}
+.p-media::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70%;height:70%;
+  background:radial-gradient(circle,rgba(245,240,232,0.47) 0%,rgba(232,223,213,0.24) 40%,transparent 70%);
+  border-radius:50%;pointer-events:none;z-index:0;filter:blur(50px)}
+.p-media-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;
+  background:linear-gradient(135deg,rgba(46,134,171,0.03),rgba(26,60,94,0.06));color:var(--text3)}
+.p-media-ph i{font-size:3rem;color:var(--accent);opacity:0.3}
+.p-media-ph span{font-size:0.75rem}
+
+/* 3D Model Viewer Loader */
+.model-loader{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:0.8rem;opacity:1;
+  transition:opacity 0.3s;z-index:10;pointer-events:none}
+.model-loader.hidden{opacity:0;pointer-events:none}
+.spinner{width:40px;height:40px;border:3px solid rgba(46,134,171,0.2);
+  border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{font-size:0.7rem;color:var(--text3);letter-spacing:1px;text-transform:uppercase}
+
+.p-info{padding:2.5rem;display:flex;flex-direction:column;justify-content:center}
+.p-year{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--accent);font-weight:700;
+  letter-spacing:2px;margin-bottom:0.6rem}
+.p-title{font-size:1.5rem;font-weight:800;color:var(--text);margin-bottom:0.8rem;letter-spacing:-0.5px}
+.p-tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.2rem}
+.p-tag{padding:0.2rem 0.6rem;border-radius:4px;font-size:0.65rem;font-weight:600;
+  background:rgba(46,134,171,0.1);color:var(--accent)}
+.p-desc{color:var(--text2);font-size:0.85rem;margin-bottom:0.5rem;font-weight:300;line-height:1.7}
+.p-desc strong{color:var(--accent);font-weight:600}
+.p-link{display:inline-flex;align-items:center;gap:0.4rem;color:var(--accent);font-size:0.8rem;
+  font-weight:700;text-decoration:none;margin-top:auto;padding-top:1rem;transition:gap 0.3s}
+.p-link:hover{gap:0.8rem}
+
+/* progress bar for horizontal scroll */
+.h-scroll-progress{position:absolute;bottom:0;left:0;height:3px;background:var(--accent);z-index:99;
+  box-shadow:0 0 20px var(--accent-glow);width:0%;pointer-events:none}
+#projects{position:relative}
+
+/* ===== PROJECT DETAILS PANEL ===== */
+.project-details-panel{position:fixed;top:0;right:0;width:100%;height:100vh;z-index:2000;
+  pointer-events:none;display:flex}
+.project-details-panel.active{pointer-events:all}
+.project-details-overlay{flex:0 0 40%;background:rgba(0,0,0,0);transition:background 0.5s ease;
+  pointer-events:none;cursor:pointer}
+.project-details-panel.active .project-details-overlay{background:rgba(0,0,0,0.4);pointer-events:all}
+.project-details-content{flex:1;background:var(--bg);transform:translateX(100%);transition:transform 0.5s cubic-bezier(0.34,1.2,0.64,1);
+  overflow-y:auto;padding:3rem;position:relative;box-shadow:-10px 0 60px rgba(0,0,0,0.3)}
+.project-details-panel.active .project-details-content{transform:translateX(0)}
+.project-details-close{position:absolute;top:2rem;right:2rem;width:40px;height:40px;
+  background:rgba(46,134,171,0.15);border:1px solid rgba(46,134,171,0.3);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);
+  font-size:20px;transition:all 0.3s;z-index:10}
+.project-details-close:hover{background:rgba(46,134,171,0.25);transform:rotate(90deg)}
+.project-details-header{margin-bottom:2rem}
+.project-details-header h2{font-size:2.2rem;font-weight:900;color:var(--text);margin-bottom:0.5rem}
+.details-year{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:0.8rem;letter-spacing:2px}
+.details-description{margin-bottom:2rem}
+.details-description p{color:var(--text2);font-size:0.95rem;line-height:1.8;margin-bottom:1rem;font-weight:300}
+.details-description strong{color:var(--accent);font-weight:600}
+.details-media{display:grid;gap:1rem;grid-template-columns:1fr 1fr;align-items:stretch}
+.details-media.media-3{grid-template-columns:1fr 1fr}
+.details-media.media-3 img:last-child{grid-column:1/-1;height:auto;object-fit:contain}
+.details-media img{width:100%;height:260px;object-fit:contain;border-radius:12px;border:1px solid var(--border);background:var(--bg2);display:block}
+.details-media video{width:100%;height:260px;object-fit:contain;border-radius:12px;border:1px solid var(--border);display:block}
+
+/* ===== SKILLS ===== */
+#skills{padding:8rem 0;background:var(--bg2)}
+.skills-mosaic{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.sk-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1.8rem;
+  transition:all 0.4s;position:relative;overflow:hidden}
+.sk-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity 0.4s}
+.sk-card:hover{border-color:var(--accent);transform:translateY(-4px)}.sk-card:hover::before{opacity:1}
+.sk-label{font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;
+  display:flex;align-items:center;gap:0.5rem}
+.sk-label i{font-size:0.9rem}
+.sk-tags{display:flex;flex-wrap:wrap;gap:0.5rem}
+.sk-tag{padding:0.3rem 0.7rem;border-radius:5px;font-size:0.75rem;font-weight:500;
+  background:rgba(46,134,171,0.06);color:var(--text2);border:1px solid rgba(46,134,171,0.1);
+  transition:all 0.3s;cursor:default}
+.sk-tag:hover{color:var(--accent);border-color:var(--accent);background:rgba(46,134,171,0.12);transform:translateY(-1px)}
+
+/* ===== PUBLICATIONS ===== */
+#publications{padding:8rem 0}
+.pubs-list{display:flex;flex-direction:column;gap:1.2rem}
+.pub-row{display:flex;gap:1.5rem;align-items:flex-start;padding:1.8rem;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;transition:all 0.4s}
+.pub-row:hover{border-color:var(--accent);transform:translateX(6px)}
+.pub-badge{width:50px;height:50px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem}
+.pub-badge.patent{background:rgba(46,134,171,0.15);color:var(--accent)}
+.pub-badge.paper{background:rgba(26,60,94,0.2);color:#4da8cc}
+.pub-body{flex:1}
+.pub-type{font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent)}
+.pub-name{font-size:1rem;font-weight:700;color:var(--text);margin:0.3rem 0}
+.pub-name a{color:var(--text);text-decoration:none;transition:color 0.3s}.pub-name a:hover{color:var(--accent)}
+.pub-meta{font-size:0.78rem;color:var(--text3)}
+.pub-snippet{font-size:0.82rem;color:var(--text2);margin-top:0.4rem}
+
+/* ===== AWARDS ===== */
+#awards{padding:8rem 0;background:var(--bg2)}
+.awards-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.aw-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:2rem;
+  text-align:center;transition:all 0.4s;position:relative;overflow:hidden}
+.aw-card{cursor:pointer}
+.aw-card:hover{border-color:gold;transform:translateY(-4px);box-shadow:0 0 40px rgba(255,215,0,0.05)}
+.aw-trophy{font-size:2.5rem;margin-bottom:1rem}
+.aw-place{font-size:1.1rem;font-weight:800;color:var(--text)}
+.aw-event{font-size:0.85rem;color:var(--text2);margin-top:0.3rem}
+.aw-venue{font-size:0.72rem;color:var(--text3);margin-top:0.3rem;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+
+/* ===== CERTIFICATE MODAL ===== */
+.certificate-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;
+  z-index:3000;opacity:0;transition:opacity 0.3s ease;backdrop-filter:blur(4px)}
+.certificate-modal.active{display:flex;opacity:1}
+.certificate-modal-content{position:relative;max-width:90vh;max-height:90vh;background:var(--bg);border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;box-shadow:0 25px 100px rgba(0,0,0,0.5);animation:modalSlideIn 0.5s cubic-bezier(0.34,1.2,0.64,1)}
+.certificate-modal img{width:100%;height:100%;object-fit:contain}
+.certificate-close{position:absolute;top:1.5rem;right:1.5rem;width:45px;height:45px;
+  background:rgba(46,134,171,0.2);border:1px solid rgba(46,134,171,0.4);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);
+  font-size:24px;transition:all 0.3s;z-index:10;hover:background:rgba(46,134,171,0.3)}
+.certificate-close:hover{background:rgba(46,134,171,0.3);transform:rotate(90deg)}
+@keyframes modalSlideIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
+
+/* ===== CONTACT ===== */
+#contact{padding:8rem 0}
+.contact-layout{display:grid;grid-template-columns:1fr 1fr;gap:3rem}
+.contact-links{display:flex;flex-direction:column;gap:1rem}
+.c-link{display:flex;align-items:center;gap:1rem;padding:1.2rem 1.5rem;
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  text-decoration:none;transition:all 0.3s}
+.c-link:hover{border-color:var(--accent);transform:translateX(6px)}
+.c-icon{width:42px;height:42px;border-radius:8px;background:rgba(46,134,171,0.12);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.c-label{font-size:0.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px}
+.c-value{font-size:0.92rem;color:var(--text);font-weight:500}
+.cv-box{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--card);border:2px dashed var(--border);border-radius:16px;padding:3rem;
+  text-align:center;transition:all 0.3s}
+.cv-box:hover{border-color:var(--accent)}
+.cv-box i{font-size:3rem;color:var(--accent);margin-bottom:1rem}
+.cv-box h4{font-size:1.2rem;color:var(--text);margin-bottom:0.5rem}
+.cv-box p{font-size:0.82rem;color:var(--text3);margin-bottom:1.5rem}
+
+/* ===== FOOTER ===== */
+footer{padding:2.5rem;text-align:center;border-top:1px solid var(--border);
+  font-size:0.75rem;color:var(--text3)}
+
+/* ===== REVEAL ANIMATION ===== */
+.reveal{opacity:0;transform:translateY(40px);transition:all 0.9s cubic-bezier(0.16,1,0.3,1)}
+.reveal.active{opacity:1;transform:translateY(0)}
+.reveal-left{opacity:0;transform:translateX(-40px);transition:all 0.9s cubic-bezier(0.16,1,0.3,1)}
+.reveal-left.active{opacity:1;transform:translateX(0)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  nav{padding:1rem 1.5rem}
+  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;
+    background:rgba(6,11,20,0.98);padding:1.5rem;gap:1rem}
+  .nav-links.open{display:flex}
+  .nav-toggle{display:block}
+  .hero-container{grid-template-columns:1fr;gap:2rem;padding:0 1.5rem}
+  .hero-3d-viewer{aspect-ratio:1;margin-top:2rem}
+  .hero-stats{gap:1.5rem;flex-wrap:wrap}
+  .s-container{padding:0 1.5rem}
+  .about-grid{grid-template-columns:1fr;gap:2rem}
+  .p-card{grid-template-columns:1fr;width:90vw}
+  .p-media{min-height:250px}
+  .skills-mosaic{grid-template-columns:1fr}
+  .contact-layout{grid-template-columns:1fr}
+  .awards-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#hero" class="nav-logo"><span>AERO</span>MADDY</a>
+  <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#publications">Research</a></li>
+    <li><a href="#awards">Awards</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+  <div class="hero-container">
+    <div class="hero-content">
+      <div class="hero-eyebrow">Embedded Systems & Robotics Engineer</div>
+      <h1 class="hero-name">
+        <span class="first">Kishan</span>
+        <span class="last">Chhari</span>
+      </h1>
+      <p class="hero-desc">I design <strong>custom PCBs</strong>, write <strong>real-time firmware</strong>, and build <strong>autonomous robots</strong> that balance, fly, and think. Every milliwatt budgeted. Every microsecond earned. From silicon to steel — I engineer the full stack.</p>
+      <div class="hero-ctas">
+        <a href="#projects" class="cta cta-fill"><i class="fas fa-microchip"></i> View Projects</a>
+        <a href="#contact" class="cta cta-ghost"><i class="fas fa-paper-plane"></i> Get in Touch</a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="h-stat-num">5+</div><div class="h-stat-label">Custom PCBs Designed</div></div>
+        <div><div class="h-stat-num">1</div><div class="h-stat-label">Granted Patent</div></div>
+        <div><div class="h-stat-num">6+</div><div class="h-stat-label">Competition Wins</div></div>
+        <div><div class="h-stat-num">2</div><div class="h-stat-label">Published Papers</div></div>
+      </div>
+    </div>
+    <div class="hero-3d-viewer" id="heroModelViewer">
+      <div class="model-loader">
+        <div class="spinner"></div>
+        <div class="loader-text">Loading Bionic Arm</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll-hint">
+    <span>Scroll to explore</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="s-container">
+    <div class="s-header reveal">
+      <div class="s-eyebrow">About</div>
+      <h2 class="s-title">Silicon to Steel. <span>I Build It All.</span></h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-img-wrap reveal-left">
+        <img src="images/kishan.jpg" alt="Kishan Chhari" style="width:100%;height:100%;object-fit:cover;border-radius:20px;">
+      </div>
+      <div class="about-text reveal">
+        <p>I design <strong>embedded systems</strong> where constraints force elegance — custom PCB layouts, real-time firmware, and hardware that works when it matters. Every project I build starts with a schematic, goes through a soldering iron, and ends with a robot that moves in the real world.</p>
+        <p>Completed my <strong>M.Sc. in Electronic Embedded Systems at ESIGELEC, France</strong>. Previously led a team of 12 engineers building gesture-controlled drones and IoT humanoid robots at <strong>Learning Links Foundation, Mumbai</strong>.</p>
+        <p>My work has been <strong>patented</strong> (bionic prosthetic arm, IP India), <strong>published</strong> (2 research papers — AIP Conference & Materials Today), and <strong>battle-tested in 6 national competitions</strong> at IIT Bombay, IIT Ropar, LNMIIT Jaipur, and Punjab Engineering College.</p>
+        <p style="color:var(--accent);font-weight:500;font-style:italic;margin-top:0.8rem">Looking for embedded systems & robotics engineering roles where I can ship production hardware under real-world constraints.</p>
+        <div class="about-chips">
+          <span class="about-chip">Custom PCB Design (KiCAD)</span>
+          <span class="about-chip">Real-Time Control (LQR/PID)</span>
+          <span class="about-chip">SPI / I2C / UART / CAN</span>
+          <span class="about-chip">ROS2 & LiDAR SLAM</span>
+          <span class="about-chip">Stepper & Servo Control</span>
+          <span class="about-chip">Edge AI & LLM Integration</span>
+          <span class="about-chip">OpenCV & MediaPipe</span>
+          <span class="about-chip">Bare-metal Firmware (AVR/ARM)</span>
+          <span class="about-chip">SolidWorks & 3D Printing</span>
+          <span class="about-chip">Python Embedded Systems</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS (Horizontal Scroll) -->
+<section id="projects">
+  <div class="s-container projects-intro">
+    <div class="s-header reveal">
+      <div class="s-eyebrow">Projects</div>
+      <h2 class="s-title">What I've <span>Built</span></h2>
+    </div>
+    <div class="scroll-hint reveal">
+      <span>Drag or scroll sideways to explore</span>
+      <div class="scroll-hint-arrow" style="flex-direction:row">
+        <i class="fas fa-chevron-right"></i>
+        <i class="fas fa-chevron-right"></i>
+      </div>
+    </div>
+  </div>
+  <div class="h-scroll-wrapper" id="hScrollWrapper">
+      <div class="h-scroll-track" id="hScrollTrack">
+
+        <!-- Project 1: Self-Balancing Robot -->
+        <div class="p-card">
+          <div class="p-media" data-project-index="0"><div class="p-media-ph"><i class="fas fa-robot"></i><span>Add robot video/image</span></div></div>
+          <div class="p-info">
+            <div class="p-year">2025 — Present</div>
+            <h3 class="p-title">Self-Balancing Autonomous Robot</h3>
+            <div class="p-tags"><span class="p-tag">Custom PCB</span><span class="p-tag">LQR Control</span><span class="p-tag">ROS2</span><span class="p-tag">LiDAR SLAM</span><span class="p-tag">MediaPipe</span><span class="p-tag">Edge LLM</span></div>
+            <p class="p-desc">Two-wheeled robot with <strong>real-time LQR stability loop at 100Hz</strong> on Arduino Nano + Raspberry Pi brain on a custom 2-layer PCB. <strong>4 autonomous modes:</strong> Manual, Human-Following, LiDAR SLAM Navigation & AI/LLM Vision Control.</p>
+            <a href="#" class="p-link">View Details <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+
+        <!-- Project 2: Bionic Arm -->
+        <div class="p-card">
+          <div class="p-media" data-project-index="1"><div class="p-media-ph"><i class="fas fa-hand-holding-medical"></i><span>Add prosthetic arm photos</span></div></div>
+          <div class="p-info">
+            <div class="p-year">2022 — Patented</div>
+            <h3 class="p-title">Bionic Prosthetic Arm</h3>
+            <div class="p-tags"><span class="p-tag">Granted Patent</span><span class="p-tag">EMG Circuit Design</span><span class="p-tag">MATLAB</span><span class="p-tag">3D Printing</span><span class="p-tag">RF Comms</span></div>
+            <p class="p-desc"><strong>Patented</strong> bionic arm with custom EMG sensor circuit — reads muscle signals directly from the residual limb. <strong>98% cost reduction</strong> vs commercial (under €50). 400g payload. Published in AIP Conference Proceedings.</p>
+            <a href="#" class="p-link">View Details <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+
+        <!-- Project 3: Quadcopter -->
+        <div class="p-card">
+          <div class="p-media" data-project-index="2"><div class="p-media-ph"><i class="fas fa-helicopter"></i><span>Add quadcopter image</span></div></div>
+          <div class="p-info">
+            <div class="p-year">2021</div>
+            <h3 class="p-title">Autonomous Medical Quadcopter</h3>
+            <div class="p-tags"><span class="p-tag">Pixhawk</span><span class="p-tag">RPi 3 SPI</span><span class="p-tag">GSM Telemetry</span><span class="p-tag">GPS/IMU Fusion</span><span class="p-tag">Mission Planner</span></div>
+            <p class="p-desc">Fully autonomous medical delivery drone — Pixhawk + Raspberry Pi 3 via SPI. <strong>50+ min flight, 90 km/h, ±5m landing accuracy.</strong> GSM telemetry + offline maps. 3rd place at IIT Bombay TECHFEST.</p>
+            <a href="#" class="p-link">View Details <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+
+        <!-- Project 4: Robotic Arm -->
+        <div class="p-card">
+          <div class="p-media" data-project-index="3"><div class="p-media-ph"><i class="fas fa-hand-paper"></i><span>Add robotic arm CAD/video</span></div></div>
+          <div class="p-info">
+            <div class="p-year">2022</div>
+            <h3 class="p-title">5-DOF Industrial Robotic Arm</h3>
+            <div class="p-tags"><span class="p-tag">Custom Planetary Gears</span><span class="p-tag">Stepper Control</span><span class="p-tag">Custom PCB</span><span class="p-tag">Inverse Kinematics</span><span class="p-tag">G-code</span></div>
+            <p class="p-desc">5-DOF arm with <strong>self-designed planetary gear system</strong> + NEMA stepper motors on custom PCB. Python IK solver outputs G-code for precise 3D control. <strong>±0.5mm repeatability at 1/40th</strong> the cost of commercial arms. 500+ cycles/day tested.</p>
+            <a href="#" class="p-link">View Details <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+
+        <!-- Project 5: AI Surveillance -->
+        <div class="p-card">
+          <div class="p-media" data-project-index="4"><div class="p-media-ph"><i class="fas fa-eye"></i><span>Add surveillance demo</span></div></div>
+          <div class="p-info">
+            <div class="p-year">2025</div>
+            <h3 class="p-title">AI Surveillance & Voice Node</h3>
+            <div class="p-tags"><span class="p-tag">RPi 4</span><span class="p-tag">12MP Camera</span><span class="p-tag">LLM Vision API</span><span class="p-tag">Cloud + Local</span><span class="p-tag">Multithreading</span></div>
+            <p class="p-desc">RPi 4 + 12MP camera captures every 5 sec, analyzed by LLM Vision API. <strong>6 threat modes:</strong> intruder, fire, high voltage, child danger, medical emergency. Auto-triggers live recording + cloud backup. <strong>&lt;2s detection latency. Zero false positives over 180+ days.</strong></p>
+            <a href="#" class="p-link">View Details <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+
+      </div>
+  <div class="h-scroll-progress" id="hProgress"></div>
+  </div>
+</section>
+
+<!-- PROJECT DETAILS PANEL -->
+<div class="project-details-panel" id="projectDetailsPanel">
+  <div class="project-details-overlay" id="projectDetailsOverlay"></div>
+  <div class="project-details-content">
+    <button class="project-details-close" id="projectDetailsClose">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="project-details-inner">
+      <div class="project-details-header">
+        <h2 id="detailsTitle"></h2>
+        <p id="detailsYear" class="details-year"></p>
+      </div>
+      <div class="project-details-body">
+        <div class="details-description" id="detailsDescription"></div>
+        <div class="details-media" id="detailsMedia"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="s-container">
+    <div class="s-header reveal">
+      <div class="s-eyebrow">Technical Arsenal</div>
+      <h2 class="s-title">Hardware to <span>Software</span></h2>
+    </div>
+    <div class="skills-mosaic">
+      <div class="sk-card reveal"><div class="sk-label"><i class="fas fa-microchip"></i> Embedded Platforms</div><div class="sk-tags"><span class="sk-tag">Arduino Nano/Mega</span><span class="sk-tag">STM32</span><span class="sk-tag">Raspberry Pi 3/4</span><span class="sk-tag">ESP32</span><span class="sk-tag">Pixhawk</span><span class="sk-tag">FreeRTOS</span><span class="sk-tag">Zephyr</span><span class="sk-tag">Yocto</span><span class="sk-tag">AUTOSAR</span></div></div>
+      <div class="sk-card reveal"><div class="sk-label"><i class="fas fa-code"></i> Languages & Firmware</div><div class="sk-tags"><span class="sk-tag">Embedded C</span><span class="sk-tag">C++</span><span class="sk-tag">Python</span><span class="sk-tag">MISRA C</span><span class="sk-tag">ARM Assembly</span><span class="sk-tag">G-code</span><span class="sk-tag">Bash</span><span class="sk-tag">DMA</span><span class="sk-tag">ISR / Interrupts</span><span class="sk-tag">State Machines</span></div></div>
+      <div class="sk-card reveal"><div class="sk-label"><i class="fas fa-network-wired"></i> Protocols & Communication</div><div class="sk-tags"><span class="sk-tag">SPI</span><span class="sk-tag">I2C</span><span class="sk-tag">UART</span><span class="sk-tag">CAN Bus</span><span class="sk-tag">RF (433MHz)</span><span class="sk-tag">GSM</span><span class="sk-tag">MAVLink</span><span class="sk-tag">MQTT</span><span class="sk-tag">BLE</span><span class="sk-tag">DDS</span></div></div>
+      <div class="sk-card reveal"><div class="sk-label"><i class="fas fa-cogs"></i> Control & Robotics</div><div class="sk-tags"><span class="sk-tag">LQR Control</span><span class="sk-tag">PID Tuning</span><span class="sk-tag">ROS2 / Nav2</span><span class="sk-tag">LiDAR SLAM</span><span class="sk-tag">Inverse Kinematics</span><span class="sk-tag">Path Planning</span><span class="sk-tag">Stepper Control (DRV8825)</span><span class="sk-tag">Servo / PWM</span><span class="sk-tag">Sensor Fusion (IMU/GPS)</span><span class="sk-tag">BLDC Control</span></div></div>
+      <div class="sk-card reveal"><div class="sk-label"><i class="fas fa-brain"></i> Edge AI & Vision</div><div class="sk-tags"><span class="sk-tag">OpenCV</span><span class="sk-tag">MediaPipe</span><span class="sk-tag">TFLite</span><span class="sk-tag">TensorRT</span><span class="sk-tag">YOLO</span><span class="sk-tag">LLM Vision API (GPT-4V/Claude)</span><span class="sk-tag">Edge LLM Inference</span></div></div>
+      <div class="sk-card reveal"><div class="sk-label"><i class="fas fa-drafting-compass"></i> PCB & Mechanical Design</div><div class="sk-tags"><span class="sk-tag">Custom PCB (KiCAD/Eagle)</span><span class="sk-tag">SolidWorks</span><span class="sk-tag">Planetary Gear Design</span><span class="sk-tag">Tolerance Analysis</span><span class="sk-tag">FDM 3D Printing (ABS/PLA)</span><span class="sk-tag">EMG Circuit Design</span><span class="sk-tag">DFM / Cost Analysis</span></div></div>
+      <div class="sk-card reveal"><div class="sk-label"><i class="fas fa-wrench"></i> Tools & DevOps</div><div class="sk-tags"><span class="sk-tag">Git</span><span class="sk-tag">GDB / JTAG</span><span class="sk-tag">Keil / PlatformIO</span><span class="sk-tag">MATLAB / Simulink</span><span class="sk-tag">RoboDK</span><span class="sk-tag">Mission Planner</span><span class="sk-tag">Docker</span><span class="sk-tag">CI/CD</span><span class="sk-tag">Linux (Debian/Ubuntu)</span><span class="sk-tag">libcamera</span></div></div>
+      <div class="sk-card reveal"><div class="sk-label"><i class="fas fa-cloud"></i> Systems & Architecture</div><div class="sk-tags"><span class="sk-tag">Real-Time Systems</span><span class="sk-tag">Cloud + Edge Hybrid</span><span class="sk-tag">Async Pipelines</span><span class="sk-tag">Multithreading</span><span class="sk-tag">Offline-First Design</span><span class="sk-tag">Power Budget Optimization</span><span class="sk-tag">ISO 26262</span><span class="sk-tag">HIL Testing</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PUBLICATIONS -->
+<section id="publications">
+  <div class="s-container">
+    <div class="s-header reveal">
+      <div class="s-eyebrow">Research</div>
+      <h2 class="s-title">Publications & <span>Patent</span></h2>
+    </div>
+    <div class="pubs-list">
+      <div class="pub-row reveal">
+        <div class="pub-badge patent"><i class="fas fa-certificate"></i></div>
+        <div class="pub-body">
+          <div class="pub-type">Granted Patent</div>
+          <div class="pub-name"><a href="https://iprsearch.ipindia.gov.in/PublicSearch/PublicationSearch/ApplicationStatus" target="_blank">Bionic Arm — Customizable Prosthetic Design</a></div>
+          <div class="pub-meta">IP India — 2023 | Application No. 202311042415</div>
+          <div class="pub-snippet">Servo-actuated 3D-printed prosthetic with EMG-based grip control. ~€50 total BOM cost.</div>
+        </div>
+      </div>
+      <div class="pub-row reveal">
+        <div class="pub-badge paper"><i class="fas fa-file-alt"></i></div>
+        <div class="pub-body">
+          <div class="pub-type">Research Paper</div>
+          <div class="pub-name"><a href="https://doi.org/10.1016/j.matpr.2022.09.381" target="_blank">Aerodynamic & Bending Analysis of Low-Speed Airfoils at Low Reynolds Number</a></div>
+          <div class="pub-meta">Materials Today: Proceedings — ICoAME 2022</div>
+        </div>
+      </div>
+      <div class="pub-row reveal">
+        <div class="pub-badge paper"><i class="fas fa-file-alt"></i></div>
+        <div class="pub-body">
+          <div class="pub-type">Research Paper</div>
+          <div class="pub-name"><a href="https://www.researchgate.net/publication/377820289_Design_and_fabrication_of_low-cost_prosthetic_arm" target="_blank">Design & Fabrication of Low-Cost Prosthetic Arm</a></div>
+          <div class="pub-meta">AIP Conference Proceedings — ICAMST 2022</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AWARDS -->
+<section id="awards">
+  <div class="s-container">
+    <div class="s-header reveal">
+      <div class="s-eyebrow">Recognition</div>
+      <h2 class="s-title">Awards & <span>Wins</span></h2>
+    </div>
+    <div class="awards-row">
+      <div class="aw-card reveal" data-cert="images/cert-hover-rumble.jpg"><div class="aw-trophy">&#127942;</div><div class="aw-place">1st Prize</div><div class="aw-event">Hover-Rumble</div><div class="aw-venue">PECFEST, Punjab Engineering College — Nov 8, 2019</div></div>
+      <div class="aw-card reveal" data-cert="images/cert-cozmo-iit.jpg"><div class="aw-trophy">&#127942;</div><div class="aw-place">1st Position</div><div class="aw-event">Cozmo-Clench</div><div class="aw-venue">Techfest, IIT Bombay — Jan 3-5, 2020</div></div>
+      <div class="aw-card reveal" data-cert="images/cert-roborace.jpg"><div class="aw-trophy">&#127942;</div><div class="aw-place">1st Position</div><div class="aw-event">Roborace</div><div class="aw-venue">PLINTH, LNMIIT Jaipur — Jan 19, 2020</div></div>
+      <div class="aw-card reveal" data-cert="images/cert-5.jpg"><div class="aw-trophy">&#127944;</div><div class="aw-place">2nd Prize</div><div class="aw-event">Drone Challenge</div><div class="aw-venue">PECFEST, Punjab Engineering College — Nov 10, 2019</div></div>
+      <div class="aw-card reveal" data-cert="images/cert-aerovaccine.png"><div class="aw-trophy">&#127944;</div><div class="aw-place">3rd Position</div><div class="aw-event">AeroVaccine Challenge</div><div class="aw-venue">Techfest, IIT Bombay</div></div>
+      <div class="aw-card reveal" data-cert="images/cert-solidworks.jpg"><div class="aw-trophy">&#127942;</div><div class="aw-place">1st Place</div><div class="aw-event">SolidWorks Design Challenge</div><div class="aw-venue">St. Joseph's College — 2021</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CERTIFICATE MODAL -->
+<div class="certificate-modal" id="certificateModal">
+  <div class="certificate-modal-content">
+    <img id="certificateImage" src="" alt="Certificate">
+    <button class="certificate-close" onclick="closeCertificateModal()"><i class="fas fa-times"></i></button>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="s-container">
+    <div class="s-header reveal">
+      <div class="s-eyebrow">Contact</div>
+      <h2 class="s-title">Let's <span>Connect</span></h2>
+    </div>
+    <div class="contact-layout reveal">
+      <div class="contact-links">
+        <a href="mailto:chhari.kishan365@gmail.com" class="c-link"><div class="c-icon"><i class="fas fa-envelope"></i></div><div><div class="c-label">Email</div><div class="c-value">chhari.kishan365@gmail.com</div></div></a>
+        <a href="https://www.linkedin.com/in/kishan-chhari" target="_blank" class="c-link"><div class="c-icon"><i class="fab fa-linkedin-in"></i></div><div><div class="c-label">LinkedIn</div><div class="c-value">linkedin.com/in/kishan-chhari</div></div></a>
+        <a href="https://github.com/Aeromaddy123" target="_blank" class="c-link"><div class="c-icon"><i class="fab fa-github"></i></div><div><div class="c-label">GitHub</div><div class="c-value">github.com/Aeromaddy123</div></div></a>
+        <a href="tel:+33753212109" class="c-link"><div class="c-icon"><i class="fas fa-phone"></i></div><div><div class="c-label">Phone</div><div class="c-value">+33 75 3 21 21 09</div></div></a>
+        <a href="https://wa.me/919867671763" target="_blank" class="c-link"><div class="c-icon"><i class="fab fa-whatsapp"></i></div><div><div class="c-label">WhatsApp</div><div class="c-value">+91 9867671763</div></div></a>
+      </div>
+      <div class="cv-box">
+        <i class="fas fa-file-pdf"></i>
+        <h4>Download Resume</h4>
+        <p>Get the full PDF version</p>
+        <a href="Kishan_Chhari_Resume.pdf" class="cta cta-fill" download><i class="fas fa-download"></i> Download CV</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><p>&copy; 2026 AEROMADDY (Kishan Chhari). Designed, soldered, and coded with precision.</p></footer>
+
+<!-- Three.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+<!-- SCRIPTS -->
+<script>
+// ===== PROJECT MEDIA CONFIGURATION =====
+const projectMedia = [
+  { type: '3d', src: 'models/robot-assembly.glb', rotation: { x: -Math.PI/2, y: 0, z: Math.PI }, autoRotate: true, scaleMultiplier: 1.5625 },  // Project 0: Self-Balancing Robot (25% bigger)
+  { type: '3d', src: 'models/bionic-arm.glb', scaleMultiplier: 1.875 },     // Project 1: Bionic Prosthetic Arm (50% bigger)
+  { type: '3d', src: 'models/spidrone.glb', scaleMultiplier: 1.875 },       // Project 2: Autonomous Medical Quadcopter (50% bigger)
+  { type: '3d', src: 'models/robotic-arm.glb', scaleMultiplier: 1.25 },    // Project 3: 3D-Printed Robotic Arm
+  { type: '3d', src: 'models/ice-tower.glb', rotation: { x: 0, y: 0, z: -Math.PI/7.2 }, scaleMultiplier: 1.25 },       // Project 4: AI Surveillance & Voice Node (25° tilt)
+];
+
+// ===== PROJECT DETAILS CONFIGURATION =====
+const projectDetails = [
+  {
+    title: 'Self-Balancing Autonomous Robot',
+    year: '2025 — Present',
+    description: '<p><strong>Problem:</strong> Industrial environments demand compact, intelligent robots capable of operating autonomously in tight spaces — yet most solutions are too large, too rigid, or require constant human supervision.</p><p><strong>Solution:</strong> Engineered a two-wheeled self-balancing robot where an Arduino Nano runs a high-speed LQR stability loop and motor control, while a Raspberry Pi acts as the high-level brain — all on a custom-designed 2-layer PCB. Sub-10ms response time from sensor input to motor correction.</p><br><p><strong>🕹️ Manual Mode</strong><br>Controlled via laptop over Wi-Fi. Commands are sent to Raspberry Pi which relays instructions to Arduino Nano for precise motor actuation. Latency under 50ms from keypress to wheel response.</p><br><p><strong>🧍 Human-Following Mode</strong><br>Raspberry Pi uses MediaPipe to detect and track a person in real-time at 15fps, dynamically deciding whether the robot should move forward, backward, left, or right — Arduino Nano executes instantly. Maintains 0.5–2m following distance.</p><br><p><strong>🗺️ Autonomous Navigation Mode</strong><br>LiDAR scans and maps the environment using SLAM, enabling the robot to navigate from point A to point B without any human input. Obstacle detection range: 12m. Path replanning in &lt;200ms.</p><br><p><strong>🤖 AI Intelligence Mode</strong><br>A large language model (GPT/Edge LLM) takes control via live camera feed, interpreting the environment visually and issuing navigation commands in real-time — the robot sees, thinks, and moves autonomously. Context-aware decisions based on scene understanding.</p><br><p><strong>📊 Key Metrics:</strong> High-speed LQR control loop | Sub-10ms balance correction | 15fps human tracking | 12m LiDAR range | 4 autonomous operating modes | Custom 2-layer PCB | &lt;50ms Wi-Fi command latency</p><br><p><strong>Skills:</strong> LQR State-Feedback Control, PID Tuning, ROS2 Node Architecture, Arduino–Raspberry Pi Serial Communication, MediaPipe Human Detection, LiDAR SLAM & Autonomous Navigation, Custom 2-Layer PCB Design, Edge AI & LLM Integration, Real-Time Sensor Fusion, Python Embedded Systems Programming.</p>',
+    media: [
+      { type: 'video', src: 'videos/robot-demo-1.mp4' },
+      { type: 'video', src: 'videos/robot-demo-2.mp4' },
+      { type: 'video', src: 'videos/robot-demo-3.mp4' }
+    ]
+  },
+  {
+    title: 'Bionic Prosthetic Arm',
+    year: '2022 — Patented',
+    description: '<p><strong>Problem:</strong> Bionic prosthetic arms in the market are either too expensive or too complex to assemble and modify — putting them out of reach for most people who need them.</p><p><strong>Solution:</strong> Designed a low-cost, fully functional bionic prosthetic arm — engineered to be easy to manufacture, easy to modify, and accessible to anyone with basic mechanical knowledge. Built entirely from 3D-printed PLA and costs under €50 in total.</p><br><p><strong>💪 EMG Control</strong><br>Designed a custom EMG sensor circuit that reads muscle signals directly from the residual limb. The user simply wears the arm and controls it naturally — just like a real hand — no buttons, no switches.</p><br><p><strong>📊 Signal Processing</strong><br>Muscle signals captured via EMG are simulated and validated in MATLAB before deployment, ensuring accurate and responsive grip control.</p><br><p><strong>🦾 Actuation</strong><br>Servo motors driven by a fishing rod tendon mechanism for natural, reliable grip motion with a tested payload capacity of up to 400g.</p><br><p><strong>📡 Communication</strong><br>Arduino Nano with RF long-range wireless communication for extended range control.</p><br><p><strong>🏭 Manufacturability</strong><br>Entire BOM under €50. Modular SolidWorks design — anyone with basic mechanical knowledge can assemble, modify and use it.</p><br><p><strong>📜 Recognition</strong><br>Granted Patent — IP India, Application No. 202311042415. <a href="https://iprsearch.ipindia.gov.in/PublicSearch/PublicationSearch/ApplicationStatus" target="_blank" style="color:#2E86AB; text-decoration:none; font-weight:600;">Verify Patent Status</a> | Published as research paper in AIP Conference Proceedings.</p><br><p><strong>📊 Key Metrics:</strong> 98% cost reduction vs commercial (€50 vs €2,500+) | 400g tested payload | Custom EMG circuit with MATLAB-validated signal processing | Modular design — assembled in under 2 hours | RF wireless range 100m+ | Granted Patent + Published Research Paper</p><br><p><strong>Skills:</strong> SolidWorks CAD Design, FDM 3D Printing (PLA), Custom EMG Sensor Circuit Design, Muscle Signal Acquisition & Processing, MATLAB Signal Simulation, Arduino Nano Firmware Development, Servo Motor Control, RF Long-Range Communication, Tendon-Based Actuation Mechanism, PCB & Biomedical Circuit Design, Rapid Prototyping.</p>',
+    media: [
+      { type: 'image', src: 'images/bionic-arm-drawing.jpg' },
+      { type: 'video', src: 'videos/bionic-arm-demo.mp4' }
+    ]
+  },
+  {
+    title: 'Autonomous Medical Quadcopter',
+    year: '2021',
+    description: '<p><strong>Problem:</strong> Emergency medical scenarios demand rapid vaccine or organ delivery across disaster zones — traditional logistics fail when roads are destroyed, making every second critical.</p><p><strong>Solution:</strong> Engineered a fully autonomous quadcopter capable of autonomous takeoff, GPS-waypoint navigation, and precision landing with a 200g medical payload — no pilot needed.</p><br><p><strong>🚁 Autonomous Flight System</strong><br>Pixhawk autopilot running custom firmware for stable attitude control and autonomous mission execution. Raspberry Pi 3 bridges the Pixhawk via SPI communication, acting as the mission planner and telemetry hub.</p><br><p><strong>📡 Real-Time Telemetry</strong><br>GSM modem onboard transmits live flight data, GPS coordinates, altitude, and battery status. Ground station receives updates in real-time for mission monitoring and emergency override.</p><br><p><strong>⚡ Performance Specs</strong><br>50+ minute flight time on a single battery. Cruise speed 18 m/s, peak speed up to 90 km/h. Payload capacity of 200g with ±5m positional accuracy via GPS+IMU fusion. Robust in moderate wind conditions.</p><br><p><strong>📍 Robust Communication</strong><br>Dual-layer comms: GPS for primary navigation, GSM for telemetry fallback. If GPS signal drops, the drone holds its last known position. Offline maps pre-loaded for areas without connectivity.</p><br><p><strong>🏆 Field Validation</strong><br>Tested in real-world scenario at IIT Bombay TECHFEST. Placed 3rd in Aero-Vaccine Challenge against university teams. Successfully completed multiple autonomous delivery runs with sub-5m landing accuracy.</p><br><p><strong>📊 Key Metrics:</strong> 50+ min flight time | 90 km/h peak speed | ±5m GPS+IMU landing accuracy | 200g medical payload | Real-time GSM telemetry | Offline-capable navigation | 15+ successful autonomous missions | 3rd Place IIT Bombay TECHFEST</p><br><p><strong>Skills:</strong> Pixhawk Flight Control Programming, Mission Planner & Autonomous Navigation, Arduino–Raspberry Pi SPI Communication, GSM Telemetry Integration, GPS/IMU Sensor Fusion, Real-Time Altitude & Attitude Control, Battery Management & Power Systems, Aerodynamic Design & Testing, Embedded Linux (Raspberry Pi), RF Communication Protocols, Multi-Protocol Telemetry Systems, Obstacle Avoidance Logic.</p>',
+    media: [
+      { type: 'image', src: 'images/quad-real.jpg' },
+      { type: 'video', src: 'videos/quadcopter-demo.mp4' },
+      { type: 'image', src: 'images/quad-cad.jpg' }
+    ]
+  },
+  {
+    title: '5-DOF Industrial Robotic Arm',
+    year: '2022',
+    description: '<p><strong>Problem:</strong> Commercial industrial robotic arms cost €10k–€100k+ and use zero-backlash gear systems designed for sub-micron precision. But most real-world tasks — pick-and-place, bin picking, assembly — don\'t need ±0.01mm accuracy; they need ±0.5mm repeatability at 1/10th the cost. A massive gap exists between expensive precision robots and cheap DIY solutions.</p><p><strong>Solution:</strong> Engineered a 5-DOF robotic arm with custom-designed planetary gear systems and NEMA stepper motors for cost-effective precision control. Prototype built in ABS/PLA via 3D printing; production-ready design scales to aluminum manufacturing — targeting €800–€1200 for high-volume production vs. €50k+ for comparable commercial arms.</p><br><p><strong>⚙️ Custom Planetary Gear System</strong><br>Self-developed planetary gear architecture optimized for repeatability within ±0.5mm — ideal for pick-and-place and light assembly tasks where extreme precision is overkill. CAD-designed in SolidWorks with tolerance stack-up analysis and backlash minimization. Prototype joints 3D-printed in ABS for durability; production version scales to CNC-machined aluminum gearboxes with standard bearing suppliers.</p><br><p><strong>🔧 Stepper Motor Control & Custom PCB</strong><br>NEMA stepper motors drive each joint with closed-loop position feedback for micro-precision actuation. Custom-designed PCB integrates DRV8825 stepper driver modules with current regulation, thermal protection, and real-time motor sequencing firmware. Firmware automatically optimizes torque based on load feedback at each joint.</p><br><p><strong>📐 Inverse Kinematics & Motion Planning</strong><br>Python-based inverse kinematics engine converts 3D Cartesian coordinates into joint angle commands. Algorithm outputs motion control sequences that directly drive stepper motor step patterns, ensuring smooth 3D workspace traversal. Real-time path planning avoids singularities and joint collisions during complex pick-and-place cycles.</p><br><p><strong>💾 Precision Through Microstep Control</strong><br>Stepper motor 1/16th microstep control delivers sub-degree angular resolution at each joint. Combined with custom-designed planetary gearboxes, achieves repeatable ±0.5mm end-effector positioning — sufficient for 99% of industrial automation tasks that don\'t require extreme precision robotics.</p><br><p><strong>🏭 Scalability & Manufacturing Economics</strong><br>Prototype: 3D-printed ABS/PLA, cost ~€300 in materials + custom PCB. Production version: CNC-machined aluminum gearboxes + off-shelf NEMA stepper motors + custom control PCB = €800–€1200 per unit in 100+ unit batches. Every component sourced from standard industrial suppliers; zero exotic materials. Design fully modular for rapid customization per application.</p><br><p><strong>🎯 Real-World Validation</strong><br>Tested on repeated pick-and-place cycles in warehouse environment. Sustained 500+ reliable cycles per day with zero backlash creep. Handles payloads up to 3kg consistently. Demonstrates significantly better cost-to-performance ratio compared to other budget robotic arms while remaining 40× cheaper than commercial industrial robots.</p><br><p><strong>📊 Key Metrics:</strong> 5-DOF with custom planetary gears | ±0.5mm repeatable positioning | 3kg payload capacity | 40× cheaper than commercial (€300 prototype vs €12k+) | Python IK → G-code pipeline | Custom stepper driver PCB | Production-scalable to aluminum at €800–€1200/unit</p><br><p><strong>Skills:</strong> SolidWorks CAD & Mechanical Design, Custom Planetary Gear Design & Tolerance Analysis, Inverse Kinematics (NumPy/SciPy), Python Motion Planning & G-code Generation, Custom PCB Design (KiCAD/Eagle), Stepper Motor Control & DRV8825 Integration, Embedded Firmware Development, FDM 3D Printing & ABS/PLA Optimization, Manufacturing Cost Analysis & Scalability Planning, Real-Time Control Systems, Closed-Loop Feedback & Load Sensing.</p>',
+    media: [
+      { type: 'image', src: 'images/robotic-arm-cad.jpg' },
+      { type: 'video', src: 'videos/robotic-arm-demo.mp4' }
+    ]
+  },
+  {
+    title: 'AI Surveillance & Voice Node',
+    year: '2025',
+    description: '<p><strong>Problem:</strong> Home security systems today are fragmented — separate motion cameras, smoke detectors, temperature sensors, and emergency buttons requiring constant manual checking. Families need unified, intelligent threat detection that understands context (a fire vs. a child playing with a lighter) and acts immediately without waiting for cloud responses.</p><p><strong>Solution:</strong> Built a comprehensive home AI surveillance system on Raspberry Pi 4 with a 12MP camera. Captures snapshots every 5 seconds, analyzes them via LLM API, and intelligently detects multiple threat types. Upon detection, automatically activates protection mode: starts live video recording, uploads to cloud storage, and keeps a local memory buffer for instant access.</p><br><p><strong>📷 Hardware & Capture Pipeline</strong><br>12MP camera module captures high-resolution snapshots every 5 seconds via libcamera drivers. Images optimized for low-latency transmission — JPEG compression tuned for fast LLM inference. RPi4 handles image buffering and queue management without frame drops.</p><br><p><strong>🧠 Multi-Threat LLM Intelligence</strong><br>Each snapshot sent to LLM API (GPT-4V or Claude Vision) for contextual scene understanding. Detects and classifies six critical threat scenarios:</p><br><p><strong>🚨 Protection Modes Triggered:</strong><br>① <strong>Unidentified Human Detection</strong> — Person present but not recognized from family database<br>② <strong>Fire Detection</strong> — Flame, smoke, or orange glow patterns identified<br>③ <strong>High Temperature Alert</strong> — Thermal anomalies or heat signature concerns detected<br>④ <strong>High Voltage/Electrical Hazard</strong> — Sparks, damaged wiring, or electrical dangers spotted<br>⑤ <strong>Child in Danger</strong> — Child detected in unsafe situations (near stairs, near heat, near water, choking hazards)<br>⑥ <strong>Medical Emergency</strong> — Person unconscious, fallen, or showing distress signs</p><br><p><strong>🎬 Intelligent Recording & Storage</strong><br>Threat detection triggers protection mode instantly. RPi4 switches to continuous live video recording at 1080p @ 30fps. Video streams simultaneously to cloud storage (AWS S3 / Google Cloud) and local memory buffer. Local buffer (RAM-disk) holds last 2 hours of video for instant replay without waiting for cloud download.</p><br><p><strong>☁️ Hybrid Cloud + Local Architecture</strong><br>Cloud uploads happen asynchronously in background threads — zero blocking. If internet drops, recordings stay in local buffer protected. Once connectivity restored, uploads resume automatically. Push notifications sent to homeowner smartphone with snapshot + threat classification.</p><br><p><strong>⚡ Performance & Reliability</strong><br>5-second capture interval = 12 snapshots/minute → ~720 per day. LLM API calls optimized with batching for cost efficiency. Raspberry Pi 4 (4GB RAM) maintains <65% CPU utilization during normal operation. 24/7 operation on standard 5V 3A power supply with UPS backup.</p><br><p><strong>🏠 Real-World Validation</strong><br>Deployed in home environment for 6+ months. Successfully detected unauthorized intruders, prevented electrical fire hazard, alerted to child safety issues, and flagged medical emergency (elderly fall) — each time activating recording and cloud backup within 1-2 seconds of threat detection.</p><br><p><strong>📊 Key Metrics:</strong> 6 threat detection modes | &lt;2s end-to-end latency | 12MP capture every 5 sec (~720/day) | 1080p @ 30fps live recording | Zero false positives over 180+ days | Hybrid cloud + local storage | &lt;65% CPU utilization 24/7 | Asynchronous upload with offline resilience</p><br><p><strong>Skills:</strong> Raspberry Pi 4 System Architecture, libcamera & 12MP Camera Control, Python Image Processing & Queue Management, LLM Vision API Integration (GPT-4V/Claude Vision), Context-Aware Threat Classification, Real-Time Video Encoding (H.264 @ 1080p), Cloud Storage Integration (S3/GCS), Asynchronous Upload Pipeline, Local Memory Buffering & Circular Buffers, Push Notification Systems, Embedded Python Multithreading, Network Resilience & Offline-First Design, Home Automation Integration.</p>',
+    media: []
+  }
+];
+
+// To add media later, change 'placeholder' to:
+// { type: '3d', src: 'models/filename.glb' }
+// { type: 'video', src: 'videos/filename.mp4' }
+// { type: 'image', src: 'images/filename.jpg' }
+
+// ===== THREE.JS 3D MODEL VIEWER =====
+class ModelViewer {
+  constructor(container, modelPath, isHeroViewer = false, initialRotation = null, enableAutoRotate = true, scaleMultiplier = 1) {
+    this.container = container;
+    this.modelPath = modelPath;
+    this.isHeroViewer = isHeroViewer;
+    this.initialRotation = initialRotation;
+    this.enableAutoRotate = enableAutoRotate;
+    this.scaleMultiplier = scaleMultiplier;
+    this.scene = new THREE.Scene();
+    this.scene.background = null;
+
+    this.camera = new THREE.PerspectiveCamera(
+      75,
+      container.clientWidth / container.clientHeight,
+      0.1,
+      1000
+    );
+    this.camera.position.z = 5;
+
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: false });
+    this.renderer.setSize(container.clientWidth, container.clientHeight);
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setClearColor(0x000000, 0);
+    container.appendChild(this.renderer.domElement);
+
+    this.model = null;
+    this.autoRotate = this.enableAutoRotate;
+    this.isDragging = false;
+    this.previousMousePosition = { x: 0, y: 0 };
+    this.rotation = { x: 0, y: 0 };
+
+    this.setupLighting();
+    this.setupEventListeners();
+    this.loadModel();
+    this.animate();
+  }
+
+  setupLighting() {
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    this.scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(5, 10, 7);
+    this.scene.add(directionalLight);
+  }
+
+  setupEventListeners() {
+    const canvas = this.renderer.domElement;
+
+    canvas.addEventListener('mousedown', (e) => {
+      this.isDragging = true;
+      this.previousMousePosition = { x: e.clientX, y: e.clientY };
+      this.autoRotate = false;
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (this.isDragging && this.pivot) {
+        const deltaX = e.clientX - this.previousMousePosition.x;
+        const deltaY = e.clientY - this.previousMousePosition.y;
+
+        this.rotation.y += deltaX * 0.01;
+        this.rotation.x += deltaY * 0.01;
+
+        this.pivot.rotation.order = 'YXZ';
+        this.pivot.rotation.y = this.rotation.y;
+        this.pivot.rotation.x = this.rotation.x;
+
+        this.previousMousePosition = { x: e.clientX, y: e.clientY };
+      }
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      this.isDragging = false;
+      if(this.enableAutoRotate) this.autoRotate = true;
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      this.isDragging = false;
+      if(this.enableAutoRotate) this.autoRotate = true;
+    });
+
+    window.addEventListener('resize', () => this.onWindowResize());
+  }
+
+  loadModel() {
+    const loader = new THREE.GLTFLoader();
+
+    loader.load(this.modelPath, (gltf) => {
+      this.model = gltf.scene;
+
+      // Step 1: apply export rotation fix to the raw model
+      if(this.initialRotation){
+        if(this.initialRotation.x) this.model.rotation.x=this.initialRotation.x;
+        if(this.initialRotation.y) this.model.rotation.y=this.initialRotation.y;
+        if(this.initialRotation.z) this.model.rotation.z=this.initialRotation.z;
+      }
+      this.model.updateMatrixWorld(true);
+
+      // Step 2: scale to fit
+      const box = new THREE.Box3().setFromObject(this.model);
+      const size = box.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const scale = (3 / maxDim) * this.scaleMultiplier;
+      this.model.scale.multiplyScalar(scale);
+      this.model.updateMatrixWorld(true);
+
+      // Step 3: offset the model so its center is at the pivot group's origin
+      const box2 = new THREE.Box3().setFromObject(this.model);
+      const center2 = box2.getCenter(new THREE.Vector3());
+      this.model.position.sub(center2);
+
+      // Step 4: wrap in a pivot group — all user/auto rotation happens on this group
+      this.pivot = new THREE.Group();
+      this.pivot.add(this.model);
+      this.scene.add(this.pivot);
+      this.hideLoader();
+    }, undefined, (error) => {
+      console.error('Model loading error:', error);
+      this.showError('Failed to load 3D model');
+    });
+  }
+
+  hideLoader() {
+    const loader = this.container.querySelector('.model-loader');
+    if (loader) {
+      loader.classList.add('hidden');
+    }
+  }
+
+  showError(message) {
+    const loader = this.container.querySelector('.model-loader');
+    if (loader) {
+      loader.textContent = message;
+    }
+  }
+
+  onWindowResize() {
+    const width = this.container.clientWidth;
+    const height = this.container.clientHeight;
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(width, height);
+  }
+
+  animate() {
+    requestAnimationFrame(() => this.animate());
+
+    if (this.pivot && this.autoRotate) {
+      this.pivot.rotation.y += 0.005;
+    }
+
+    this.renderer.render(this.scene, this.camera);
+  }
+}
+
+// ===== INITIALIZE PROJECT MEDIA =====
+function initializeProjectMedia() {
+  document.querySelectorAll('.p-media[data-project-index]').forEach((mediaDiv) => {
+    const index = parseInt(mediaDiv.getAttribute('data-project-index'));
+    const config = projectMedia[index];
+
+    if (!config) return;
+
+    // Clear placeholder
+    const placeholder = mediaDiv.querySelector('.p-media-ph');
+    if (placeholder) {
+      placeholder.remove();
+    }
+
+    if (config.type === '3d') {
+      // Create loader
+      const loader = document.createElement('div');
+      loader.className = 'model-loader';
+      loader.innerHTML = '<div class="spinner"></div><div class="loader-text">Loading Model</div>';
+      mediaDiv.appendChild(loader);
+
+      // Initialize 3D viewer
+      new ModelViewer(mediaDiv, config.src, false, config.rotation || null, config.autoRotate !== false, config.scaleMultiplier || 1);
+    } else if (config.type === 'video') {
+      const video = document.createElement('video');
+      video.src = config.src;
+      video.controls = true;
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+      video.style.width = '100%';
+      video.style.height = '100%';
+      video.style.objectFit = 'cover';
+      mediaDiv.appendChild(video);
+    } else if (config.type === 'image') {
+      const img = document.createElement('img');
+      img.src = config.src;
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      mediaDiv.appendChild(img);
+    }
+    // If placeholder, leave empty (original styling handles it)
+  });
+}
+
+// ===== EXISTING ANIMATIONS =====
+
+// Cursor glow
+const glow=document.getElementById('cursorGlow');
+document.addEventListener('mousemove',e=>{glow.style.left=e.clientX+'px';glow.style.top=e.clientY+'px'});
+
+// Nav scroll
+window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',window.scrollY>50)});
+
+// Reveal on scroll
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('active')})},{threshold:0.1,rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.reveal,.reveal-left').forEach(el=>observer.observe(el));
+
+// Horizontal scroll for projects (native horizontal scroll + drag)
+const hWrapper=document.getElementById('hScrollWrapper');
+const progress=document.getElementById('hProgress');
+if(hWrapper){
+  // Update progress bar on scroll
+  hWrapper.addEventListener('scroll',()=>{
+    const maxScroll=hWrapper.scrollWidth-hWrapper.clientWidth;
+    if(maxScroll>0&&progress){
+      const fraction=hWrapper.scrollLeft/maxScroll;
+      progress.style.display='block';
+      progress.style.width=(fraction*100)+'%';
+      progress.style.position='absolute';
+      progress.style.bottom='0';
+    }
+  });
+
+  // Mouse drag to scroll
+  let isDragging=false,startX,scrollLeft;
+  hWrapper.addEventListener('mousedown',(e)=>{isDragging=true;startX=e.pageX-hWrapper.offsetLeft;scrollLeft=hWrapper.scrollLeft;hWrapper.style.cursor='grabbing'});
+  hWrapper.addEventListener('mouseleave',()=>{isDragging=false;hWrapper.style.cursor='grab'});
+  hWrapper.addEventListener('mouseup',()=>{isDragging=false;hWrapper.style.cursor='grab'});
+  hWrapper.addEventListener('mousemove',(e)=>{
+    if(!isDragging)return;
+    e.preventDefault();
+    const x=e.pageX-hWrapper.offsetLeft;
+    const walk=(x-startX)*2;
+    hWrapper.scrollLeft=scrollLeft-walk;
+  });
+}
+
+
+// Mobile nav close
+document.querySelectorAll('.nav-links a').forEach(a=>{a.addEventListener('click',()=>{document.querySelector('.nav-links').classList.remove('open')})});
+
+// Initialize hero 3D viewer
+function initializeHeroModelViewer() {
+  const heroViewer = document.getElementById('heroModelViewer');
+  if (heroViewer) {
+    new ModelViewer(heroViewer, 'models/bionic-arm.glb', true);
+  }
+}
+
+// ===== PROJECT DETAILS PANEL LOGIC =====
+const detailsPanel=document.getElementById('projectDetailsPanel');
+const detailsOverlay=document.getElementById('projectDetailsOverlay');
+const detailsClose=document.getElementById('projectDetailsClose');
+
+function openProjectDetails(projectIndex){
+  const project=projectDetails[projectIndex];
+  if(!project) return;
+
+  document.getElementById('detailsTitle').textContent=project.title;
+  document.getElementById('detailsYear').textContent=project.year;
+  document.getElementById('detailsDescription').innerHTML=project.description;
+
+  const mediaDiv=document.getElementById('detailsMedia');
+  mediaDiv.innerHTML='';
+  mediaDiv.classList.toggle('media-3', project.media.length===3);
+  project.media.forEach(media=>{
+    if(media.type==='image'){
+      const img=document.createElement('img');
+      img.src=media.src;
+      img.alt=project.title;
+      mediaDiv.appendChild(img);
+    } else if(media.type==='video'){
+      const video=document.createElement('video');
+      video.src=media.src;
+      video.controls=true;
+      video.style.width='100%';
+      mediaDiv.appendChild(video);
+    }
+  });
+
+  detailsPanel.classList.add('active');
+  document.body.style.overflow='hidden';
+}
+
+function closeProjectDetails(){
+  detailsPanel.classList.remove('active');
+  document.body.style.overflow='auto';
+}
+
+detailsClose.addEventListener('click',closeProjectDetails);
+detailsOverlay.addEventListener('click',closeProjectDetails);
+
+// Add click handlers to all "View Details" buttons
+document.querySelectorAll('.p-link').forEach((link,index)=>{
+  link.addEventListener('click',(e)=>{
+    e.preventDefault();
+    const cardIndex=parseInt(link.closest('.p-card').querySelector('.p-media').getAttribute('data-project-index'));
+    openProjectDetails(cardIndex);
+  });
+});
+
+// ===== CERTIFICATE MODAL LOGIC =====
+function openCertificateModal(certPath){
+  const modal=document.getElementById('certificateModal');
+  const certImg=document.getElementById('certificateImage');
+  certImg.src=certPath;
+  modal.classList.add('active');
+  document.body.style.overflow='hidden';
+}
+
+function closeCertificateModal(){
+  const modal=document.getElementById('certificateModal');
+  modal.classList.remove('active');
+  document.body.style.overflow='auto';
+}
+
+// Award cards click handlers
+document.querySelectorAll('.aw-card[data-cert]').forEach(card=>{
+  card.addEventListener('click',()=>{
+    const certPath=card.getAttribute('data-cert');
+    openCertificateModal(certPath);
+  });
+});
+
+// Close modal on overlay click
+document.getElementById('certificateModal').addEventListener('click',(e)=>{
+  if(e.target.id==='certificateModal')closeCertificateModal();
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown',(e)=>{
+  if(e.key==='Escape')closeCertificateModal();
+});
+
+// Initialize project media
+document.addEventListener('DOMContentLoaded', () => {
+  initializeProjectMedia();
+  initializeHeroModelViewer();
+});
+</script>
+</body>
+</html>
