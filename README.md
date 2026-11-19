@@ -1,32 +1,17 @@
-# Kishan Chhari — Portfolio
+# Kishan Chhari — Robotics Studio
 
-Interactive portfolio website with Three.js 3D model viewer, Mantis-style horizontal scroll animations, and responsive design.
+My portfolio, built as an interactive 3D workshop with Three.js, in English and French.
 
-**Live at:** `https://YOUR-USERNAME.github.io`
+**Live at:** https://aeromaddy123.github.io
 
-## Quick Start
+## What's inside
 
-1. Replace `YOUR-USERNAME` with your GitHub username in `index.html`
-2. Add your media files to `models/`, `videos/`, `images/`
-3. Update `projectMedia` config in `index.html`
-4. Push to GitHub → enable Pages in Settings
+- `index.html`, `studio.css`, `studio.js` and the other `.js` modules: the site itself (no build step).
+- `assets/`: Three.js runtime, page-flip library, UR16e meshes, project-book images, clips and the VeggieBot report.
+- `models/`: project models (`.glb`) and the workbench equipment in `models/bench/` (sources and licences in `models/bench/CREDITS.md`).
+- `videos/`: full project demo videos used in the project books.
+- `tools/lettering.py`: bakes the UR16e handwriting path used on the home screen.
 
-## Tech Stack
+## Run locally
 
-- Three.js r128 (3D model rendering)
-- Vanilla JS (animations, horizontal scroll)
-- CSS3 (parallax, cursor glow, reveals)
-- GitHub Pages (hosting)
-
-## Folder Structure
-
-```
-├── index.html              ← Main portfolio page
-├── models/                 ← .glb 3D models (converted from SolidWorks)
-├── videos/                 ← .mp4 demo videos
-├── images/                 ← .jpg/.png photos and renders
-├── Kishan_Chhari_Resume.pdf ← Resume download
-└── SETUP_GUIDE.md          ← Detailed setup instructions
-```
-
-See `SETUP_GUIDE.md` for full instructions on converting CAD files and deploying.
+Serve the folder with any static server, for example `python3 -m http.server`, then open http://localhost:8000.

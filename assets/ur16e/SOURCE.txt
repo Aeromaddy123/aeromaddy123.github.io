@@ -1,0 +1,4 @@
+UR16e visual geometry and nominal link parameters from Universal Robots.
+https://github.com/UniversalRobots/Universal_Robots_ROS2_Description/tree/0eb1a861f7772fceb38510d90fa2f98ec668070c
+The UR16e configuration uses the UR10e base, shoulder and wrist meshes, plus the UR16e upper arm and forearm. DAE visual meshes converted to GLB using assimpjs. License included alongside this file.
+The marker, lettering, glass and workbench are portfolio illustrations.

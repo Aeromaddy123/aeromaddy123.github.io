@@ -4,3 +4,5 @@ videos/*-original.mp4
 videos/robot-demo-compressed.mp4
 videos/robot-demo2.mov
 .DS_Store
+# local preview server settings
+.claude/
