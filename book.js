@@ -168,6 +168,11 @@ export function openBook(book,opener){
     drawShadow:true,maxShadowOpacity:.55,flippingTime:reduced.matches?1:1100,startZIndex:2,mobileScrollSupport:false,
     useMouseEvents:true,swipeDistance:30,showPageCorners:true,disableFlipByClick:true,clickEventForward:true});
   flip.loadFromHTML(pages);
+  // StPageFlip starts a "previous" turn at x = 10, which is only the book's left edge when
+  // two pages fill the frame. In one-page (phone) mode the book starts at rect.left, so the
+  // turn began on the wrong side and never happened. Start it from the real left edge.
+  const fc=flip.flipController;
+  if(fc?.render&&typeof fc.flip==='function')fc.flipPrev=corner=>{const r=fc.render.getRect();fc.flip({x:r.left+10,y:corner==='top'?1:r.height-2});};
   const last=pages.length-1;
   // Keep the closed book centred: the cover sits alone on one half of the spread.
   function place(i){
@@ -205,6 +210,8 @@ export function openBook(book,opener){
     if(closing)return;closing=true;
     pages.forEach(p=>p.querySelectorAll('video').forEach(v=>v.pause()));
     root.classList.remove('shown');await wait(650);
+    // Release the clips so the browser stops downloading them in the background.
+    pages.forEach(p=>p.querySelectorAll('video').forEach(v=>{v.removeAttribute('src');v.load();}));
     flip.destroy();root.remove();document.documentElement.classList.remove('bk-open');
     removeEventListener('keydown',onKey,true);active=null;opener?.focus?.({preventScroll:true});
   }

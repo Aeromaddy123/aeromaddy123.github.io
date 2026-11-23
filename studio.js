@@ -1,5 +1,6 @@
 import {t,isFr,onLang,colon} from './i18n.js';
 import * as FR from './content-fr.js';
+import {reveal} from './loading.js';
 import './rail.js';
 import './transitions.js';
 import './autoscroll.js';
@@ -9,7 +10,9 @@ const projects = [
   {id:'balancer',name:'Self-balancing robot', field:'Embedded control', text:'For my MSc R&D project at ESIGELEC, I built a two-wheeled robot around an Arduino Nano and a Raspberry Pi. The Nano runs the balance controller while the Pi handles perception and higher-level commands.', video:'./videos/robot-demo-1.mp4', caption:'Self-balancing robot · prototype footage'},
   {id:'uav',name:'Medical UAV', field:'Flight systems', text:'I integrated a Pixhawk flight controller with a Raspberry Pi companion computer for a medical-delivery quadcopter. The project brought together waypoint navigation, onboard electronics and telemetry.', video:'./videos/quadcopter-demo.mp4', caption:'Medical quadcopter · project footage'},
   {id:'veggie',name:'VeggieBot · UR16e', field:'Robot learning', text:'At CESI LINEACT with IMT Atlantique, I worked on teaching a UR16e kitchen manipulation from human demonstrations. My work connected teleoperation, camera recording, policy training and testing on the physical robot.',video:'./assets/veggiebot-demo.mp4',caption:'Front camera · recorded VeggieBot demonstration, October 2026'},
-  {id:'arm',name:'Bionic prosthetic arm', field:'Medical robotics', text:'I designed a servo-actuated, 3D-printed prosthetic arm with a custom EMG sensor circuit that reads muscle signals from the residual limb to control the grip. The parts cost under €50, the design is filed as an Indian patent application, and the work was published in AIP Conference Proceedings.', video:'./videos/bionic-arm-demo.mp4', caption:'Bionic prosthetic arm · prototype footage'}
+  {id:'arm',name:'Bionic prosthetic arm', field:'Medical robotics', text:'I designed a servo-actuated, 3D-printed prosthetic arm with a custom EMG sensor circuit that reads muscle signals from the residual limb to control the grip. The parts cost under €50, the design is filed as an Indian patent application, and the work was published in AIP Conference Proceedings.', video:'./videos/bionic-arm-demo.mp4', caption:'Bionic prosthetic arm · prototype footage'},
+  {id:'handover',name:'Two-arm handover · RL', field:'Reinforcement learning', text:'Two robot arms in MuJoCo learn from scratch, by trial and error, to pick up a block, pass it between them and place it on a target. After 50 million simulation steps (41 minutes on one GPU), 100% of test attempts pass the block across and 89% deliver it on target.', video:'./assets/book/rl-handover-policy.mp4', caption:'The learned policy · MuJoCo simulation'},
+  {id:'g1',name:'Humanoid G1 · walk to run', field:'Reinforcement learning', text:'A Unitree G1 humanoid in MuJoCo teaches itself to walk in 96 million practice steps, then, starting from that walking robot, learns to run at about 2.1 m/s with both feet leaving the ground.', video:'./assets/book/rl-g1-run.mp4', caption:'The running policy · MuJoCo simulation'}
 ];
 // Skills, grouped by engineering area and named in general terms.
 const skillGroups=[
@@ -79,7 +82,7 @@ const books={
     ]
   },
   uav:{
-    title:'Medical delivery quadcopter',number:'02',subtitle:'Autonomous UAV · 2021',
+    title:'Medical delivery quadcopter',number:'02',subtitle:'Autonomous UAV · 2021 — and an RL pilot in simulation · 2026',
     cover:'./assets/book/quad-real.jpg',coverAlt:'The medical quadcopter on the floor',
     spreads:[
       {video:'./videos/quadcopter-demo.mp4',poster:'./assets/book/uav-poster.jpg',w:1080,h:1964,
@@ -96,7 +99,22 @@ const books={
                     '<b>Missions.</b> Waypoint routes are planned in Mission Planner and flown autonomously.',
                     '<b>Link.</b> GSM telemetry keeps the drone in contact beyond radio range.']},
              'It is one of the more than six types of drones I have built.',
-             {chips:['Drone & UAV design','Pixhawk / ArduPilot','Raspberry Pi','Sensor fusion','Waypoint navigation','Telemetry','CAD modelling']}]}
+             {chips:['Drone & UAV design','Pixhawk / ArduPilot','Raspberry Pi','Sensor fusion','Waypoint navigation','Telemetry','CAD modelling']}]},
+      // Part two: the 2026 reinforcement-learning drone in MuJoCo (RL_Drone_Nav project).
+      {video:'./assets/book/rl-drone-map.mp4',poster:'./assets/book/rl-drone-map-poster.jpg',w:544,h:680,
+       caption:'Mapping flight: the lidar builds a 3D map of the hills and trees, and the camera finds the five landing pads. Then the pilot learns in random forests.',
+       kicker:'Part two · Reinforcement learning',title:'A drone that maps a forest',
+       body:['In 2026 I came back to drones with reinforcement learning. In MuJoCo, a <b>Skydio X2</b> quadcopter surveys 120 × 120 m of hills and forest, then flies itself to whichever checkpoint you type.',
+             {list:['<b>Map.</b> A lawn-mower flight at 24 m: a downward lidar maps the ground, the trees and the rocks, and the camera spots the five numbered pads.',
+                    '<b>Plan.</b> A* on that map, on two levels: 3.5 m above the ground between the trees, or over the canopy when there is no way through.',
+                    '<b>Fly.</b> A pilot trained with reinforcement learning follows the route, avoids obstacles and lands.']}]},
+      {video:'./assets/book/rl-drone-fly.mp4',poster:'./assets/book/rl-drone-fly-poster.jpg',w:544,h:680,
+       caption:'“Go to 3”: the planned route between the trees (cyan), the point the pilot is chasing (yellow), and the landing on pad 3.',
+       kicker:'The learned pilot',title:'Type a number, it flies there and lands',
+       body:['The pilot is a neural network trained with <b>PPO</b> in thousands of random forests on two GPUs. It sees <b>154 lidar beams</b>, its motion sensors and the next route points, and sends thrust and rotation rates to a standard flight controller.',
+             {stats:[['377 M','steps in 19 min'],['95 %','landings in training'],['14 / 14','test flights landed'],['5–51 cm','from the pad centre']]},
+             {links:[{label:'Code on GitHub',href:'https://github.com/Aeromaddy123/drone-lidar-nav-rl'}]},
+             {chips:['Reinforcement learning (PPO)','MuJoCo','Lidar mapping','Autonomous landing']}]}
     ]
   },
   veggie:{
@@ -195,6 +213,53 @@ const books={
        body:['The design was published as a first-author paper, <i>Design and fabrication of low-cost prosthetic arm</i>, in AIP Conference Proceedings (2024), and filed as <b>Indian patent application 202311042415</b>.',
              {list:['<b>Mechanical design</b> of the fingers, thumb and forearm in CAD.','<b>Electronics</b>: EMG signal conditioning and servo drive.','<b>Firmware</b> that turns muscle activity into a grip.']},
              {chips:['Medical robotics','CAD modelling','3D printing','EMG sensing','Signal conditioning','Servo control']}]}
+    ]
+  },
+  handover:{
+    title:'Two-arm handover',number:'05',subtitle:'Reinforcement learning in simulation · 2026',
+    cover:'./assets/book/handover-cover.jpg',coverAlt:'Two black robot arms over a wooden table, one holding a red block',
+    // Facts from the project's README and results (github.com/Aeromaddy123/bimanual-handover-rl).
+    spreads:[
+      {video:'./assets/book/rl-handover-scene.mp4',poster:'./assets/book/rl-handover-scene-poster.jpg',w:544,h:680,
+       caption:'The scene: two arms, one block. Then 8,192 copies of it train at the same time on one GPU.',
+       kicker:'The project',title:'Two arms, one block, no demonstrations',
+       body:['Two robot arms learn, from scratch and by trial and error, to <b>pick up a block, hand it from one arm to the other in the air, and put it down on a target</b>.',
+             'Nobody shows them how. The only teacher is a reward, and the arms practise in thousands of simulated copies at once.',
+             {specs:[['Robots','Two ViperX 300 S arms (ALOHA)'],['Simulator','MuJoCo MJX + JAX'],['Algorithm','PPO'],['Parallel worlds','8,192 on one GPU']]}]},
+      {video:'./assets/book/rl-handover-learning.mp4',poster:'./assets/book/rl-handover-learning-poster.jpg',w:544,h:680,
+       caption:'Training time-lapse: steps, training time and the success rate measured at each checkpoint.',
+       kicker:'How it learned',title:'From flailing to 89 %',
+       body:['Early attempts are random: missed grabs and dropped blocks. The first handovers appear after about 20 million steps. By 33 million, every attempt passes the block across.',
+             {stats:[['50.1 M','simulation steps'],['41 min','on one RTX A4000'],['100 %','pass the block across'],['89 %','deliver it on target']]},
+             'Tested on 256 attempts. “Delivered” means within 5 cm of the target, held there for the last second.']},
+      {video:'./assets/book/rl-handover-policy.mp4',poster:'./assets/book/rl-handover-policy-poster.jpg',w:544,h:680,
+       caption:'The learned policy: pick up, pass, let go, deliver.',
+       kicker:'What I learned',title:'The reward is the real design work',
+       body:['My first try used two Franka arms and my own hand-written reward. The agent kept finding shortcuts:',
+             {list:['It gripped the bar but never lifted it: gripping alone already paid.','It tipped the bar up by one end to fake a lift.','It held the bar level, still on the table.']},
+             'What worked was the reward from DeepMind’s MuJoCo Playground handover task: it pays only for <b>new progress</b>, so standing still earns nothing.',
+             {links:[{label:'Code on GitHub',href:'https://github.com/Aeromaddy123/bimanual-handover-rl'}]},
+             {chips:['Reinforcement learning (PPO)','Reward design','MuJoCo MJX','Bimanual manipulation']}]}
+    ]
+  },
+  g1:{
+    title:'Humanoid: walk, then run',number:'06',subtitle:'Unitree G1 · reinforcement learning in simulation · 2026',
+    cover:'./assets/book/g1-cover.jpg',coverAlt:'The Unitree G1 humanoid running down a tree-lined avenue',
+    spreads:[
+      {video:'./assets/book/rl-g1-walk.mp4',poster:'./assets/book/rl-g1-walk-poster.jpg',w:544,h:680,
+       caption:'Step 0: it falls straight away. Then attempt after attempt as training goes on, until it walks. Turn the sound on for the narration.',
+       kicker:'The project',title:'A humanoid that taught itself to walk',
+       body:['A <b>Unitree G1</b> humanoid in MuJoCo learns to walk with reinforcement learning, starting from nothing: at step 0 it falls straight away.',
+             'It is rewarded for following the speed it is asked for and staying upright. Small sideways pushes during training teach it to catch itself.',
+             {stats:[['96 M','practice steps'],['42 min','on two GPUs'],['49 / 49','test robots stayed up'],['0.75 m/s','walking speed']]}]},
+      {video:'./assets/book/rl-g1-run.mp4',poster:'./assets/book/rl-g1-run-poster.jpg',w:544,h:680,
+       caption:'Teaching it to run: what changed, the moment both feet leave the ground, and the run at full speed.',
+       kicker:'Part two',title:'From walking to running',
+       body:['I started from the walking robot, not from scratch, and changed what it was asked to do:',
+             {list:['<b>Speed limit</b> 1 → 4 m/s.','<b>Step rhythm</b> 1.4 → 2.5 steps per second.','<b>Foot lift</b> 15 → 25 cm.','A reward for <b>both feet leaving the ground</b>, so it runs instead of power-walking.']},
+             {stats:[['2.1 m/s','about 7.5 km/h, 3× its walk'],['24–27 %','of the time in the air'],['0','falls in testing']]},
+             'It took about 90 million more practice steps in three rounds; the last 46 million produced the true run.',
+             {chips:['Reinforcement learning (PPO)','Legged locomotion','Reward shaping','Humanoid robots']}]}
     ]
   }
 };
@@ -331,17 +396,21 @@ dialog.onclick=e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();
 dialog.addEventListener('close',()=>{inside.querySelector('video')?.pause();inside.replaceChildren();opener?.classList.remove('pulled');opener?.focus({preventScroll:true});});
 // Drive the shared backdrop independently of WebGL, including on restored scroll positions.
 const root=document.documentElement;
-let themeFrame=0;
+let themeFrame=0,lastGlass='',lastBg='';
+// These variables live on <html>, so every write restyles the whole page: write only on change.
+// The background only spans ~7 shades (#131210 → #1a1815), so 0.5 % steps are invisible.
 function paintBackdrop(){
   themeFrame=0;
   const exit=(document.querySelector('#glass').offsetTop-scrollY)/Math.max(1,innerHeight);
   const panel=Math.max(0,Math.min(1,exit));
-  root.style.setProperty('--opening-glass-opacity',panel*panel*(3-2*panel));
+  const glass=(panel*panel*(3-2*panel)).toFixed(3);
+  if(glass!==lastGlass){root.style.setProperty('--opening-glass-opacity',glass);lastGlass=glass;}
   document.body.classList.toggle('at-opening',exit>.04);
   const travel=Math.max(1,root.scrollHeight-root.clientHeight);
   const progress=Math.max(0,Math.min(1,scrollY/travel));
   const eased=progress*progress*(3-2*progress);
-  root.style.setProperty('--page-bg',`color-mix(in oklab, #131210, #1a1815 ${(eased*100).toFixed(3)}%)`);
+  const bg=`color-mix(in oklab, #131210, #1a1815 ${(Math.round(eased*200)/2).toFixed(1)}%)`;
+  if(bg!==lastBg){root.style.setProperty('--page-bg',bg);lastBg=bg;}
 }
 function scheduleBackdrop(){if(!themeFrame)themeFrame=requestAnimationFrame(paintBackdrop);}
 window.addEventListener('scroll',scheduleBackdrop,{passive:true});
@@ -384,6 +453,7 @@ document.querySelector('.scroll-arrow').addEventListener('click',event=>{
 // The CAD scenes own these spots; the drawing and text stand-ins appear only if 3D fails.
 document.documentElement.classList.add('studio-3d');
 import('./scene.js').then(m=>m.startStudio(pins,{journey,journeyButtons})).catch(error=>{
+  reveal();
   document.body.classList.add('arm-failed','writer-failed');
   console.warn('3D preview unavailable',error);
 });

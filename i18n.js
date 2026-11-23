@@ -19,6 +19,9 @@ export const isFr=()=>lang==='fr';
 const NB=' ';
 // Short interface strings used by the scripts, keyed by their English text.
 const UI={
+  '3D models':'modèles 3D','Ready!':'Prêt'+NB+'!','Tightening the bolts':'On serre les boulons','Charging the batteries':'On charge les batteries',
+  'Calibrating the UR16e':'On calibre l’UR16e','Passing the red block':'On se passe le bloc rouge','Teaching the G1 to stand':'Le G1 apprend à tenir debout',
+  'Mapping the forest':'On cartographie la forêt','Warming up the soldering iron':'Le fer à souder chauffe','Polishing the camera lenses':'On nettoie les objectifs',
   'Play':'Lecture','Pause':'Pause','Back 5 seconds':'Reculer de 5 secondes','Forward 5 seconds':'Avancer de 5 secondes',
   'Video timeline':'Barre de progression de la vidéo','Turn sound on':'Activer le son','Turn sound off':'Couper le son',
   'Project book':'Carnet de projet','project book':'carnet de projet','Close book':'Fermer le carnet','Close the book':'Fermer le carnet',
@@ -58,7 +61,7 @@ const PAGE_FR={
   'bench.kicker':'<i></i> Projets choisis',
   'bench.title':'L’atelier<span>.</span>',
   'bench.hint':'Cliquez sur un projet lumineux pour découvrir sa réalisation et ses vidéos.',
-  'bench.stages':'Établis','bench.s1':'Robotique et électronique','bench.s2':'Projets et prototypes','bench.s3':'Cellule VeggieBot',
+  'bench.stages':'Établis','bench.s1':'Robotique et électronique','bench.s2':'Projets et prototypes','bench.s3':'Cellule VeggieBot','bench.s4':'Apprentissage robotique',
   'bench.projects':'Projets',
   'skills.kicker':'<i></i> Compétences',
   'skills.title':'Du matériel <span>au logiciel</span>.',
@@ -75,6 +78,7 @@ const PAGE_FR={
   'contact.cv':'Télécharger le CV <span aria-hidden="true">↓</span>',
   'footer.touch':'Me contacter ↗',
   'footer.credits':'Crédits des modèles 3D ↗',
+  'loader.aria':'Chargement de l’atelier 3D','loader.skip':'Entrer maintenant →',
   'dialog.close':'Fermer'
 };
 const original=new Map();

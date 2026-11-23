@@ -39,7 +39,7 @@ function line(){
 }
 if(frame){
   const con=document.createElement('div');con.className='ros-console';con.setAttribute('aria-hidden','true');
-  con.innerHTML='<div class="ros-prompt">kishan@lab:~/ros2_ws$ ros2 launch veggiebot bringup.launch.py<span class="ros-cursor"></span></div><div class="ros-log"></div>';
+  con.innerHTML='<div class="ros-log"></div>';
   frame.append(con);
   const log=con.querySelector('.ros-log');
   const lineH=()=>parseFloat(getComputedStyle(log).lineHeight)||22;

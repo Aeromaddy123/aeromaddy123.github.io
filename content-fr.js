@@ -7,7 +7,9 @@ export const projects=[
   {name:'Robot auto-équilibré',field:'Commande embarquée',text:'Pour mon projet de R&D de MSc à l’ESIGELEC, j’ai construit un robot à deux roues autour d’un Arduino Nano et d’un Raspberry Pi. Le Nano exécute la boucle d’équilibre, tandis que le Pi gère la perception et les commandes de haut niveau.',caption:'Robot auto-équilibré · images du prototype'},
   {name:'Drone médical',field:'Systèmes de vol',text:'J’ai intégré un contrôleur de vol Pixhawk et un ordinateur compagnon Raspberry Pi dans un quadricoptère de livraison médicale. Le projet réunissait navigation par points de passage, électronique embarquée et télémétrie.',caption:'Quadricoptère médical · images du projet'},
   {name:'VeggieBot · UR16e',field:'Apprentissage robotique',text:'Au CESI LINEACT avec IMT Atlantique, j’ai appris à un UR16e des tâches de manipulation en cuisine à partir de démonstrations humaines. Mon travail reliait la téléopération, l’enregistrement multicaméra, l’entraînement des politiques et les essais sur le robot réel.',caption:'Caméra frontale · démonstration VeggieBot enregistrée, octobre 2026'},
-  {name:'Prothèse de bras bionique',field:'Robotique médicale',text:`J’ai conçu une prothèse de bras imprimée en 3D et actionnée par servomoteurs, avec un circuit de capteurs EMG sur mesure qui lit les signaux musculaires du membre résiduel pour commander la préhension. Les pièces coûtent moins de 50${N}€, la conception fait l’objet d’une demande de brevet indien et le travail a été publié dans AIP Conference Proceedings.`,caption:'Prothèse de bras bionique · images du prototype'}
+  {name:'Prothèse de bras bionique',field:'Robotique médicale',text:`J’ai conçu une prothèse de bras imprimée en 3D et actionnée par servomoteurs, avec un circuit de capteurs EMG sur mesure qui lit les signaux musculaires du membre résiduel pour commander la préhension. Les pièces coûtent moins de 50${N}€, la conception fait l’objet d’une demande de brevet indien et le travail a été publié dans AIP Conference Proceedings.`,caption:'Prothèse de bras bionique · images du prototype'},
+  {name:'Passage entre deux bras · RL',field:'Apprentissage par renforcement',text:`Dans MuJoCo, deux bras robotiques apprennent seuls, par essais et erreurs, à saisir un bloc, à se le passer et à le poser sur une cible. Après 50${N}millions de pas de simulation (41${N}minutes sur un seul GPU), 100${N}% des essais réussissent le passage et 89${N}% déposent le bloc sur la cible.`,caption:'La politique apprise · simulation MuJoCo'},
+  {name:'Humanoïde G1 · de la marche à la course',field:'Apprentissage par renforcement',text:`Dans MuJoCo, un humanoïde Unitree G1 apprend seul à marcher en 96${N}millions de pas d’entraînement, puis, à partir de ce robot qui marche, apprend à courir à environ 2,1${N}m/s, les deux pieds quittant le sol.`,caption:'La politique de course · simulation MuJoCo'}
 ];
 
 export const skillGroups=[
@@ -73,7 +75,7 @@ export const books={
     ]
   },
   uav:{
-    title:'Quadricoptère de livraison médicale',subtitle:'Drone autonome · 2021',
+    title:'Quadricoptère de livraison médicale',subtitle:'Drone autonome · 2021 — et un pilote RL en simulation · 2026',
     coverAlt:'Le quadricoptère médical posé au sol',
     spreads:[
       {caption:'Vol de nuit et radiocommande utilisée pour le piloter.',
@@ -88,7 +90,19 @@ export const books={
                     '<b>Missions.</b> Les itinéraires par points de passage sont planifiés dans Mission Planner et volés en autonomie.',
                     '<b>Liaison.</b> La télémétrie GSM maintient le contact au-delà de la portée radio.']},
              'C’est l’un des plus de six types de drones que j’ai construits.',
-             {chips:['Conception de drones','Pixhawk / ArduPilot','Raspberry Pi','Fusion de capteurs','Navigation par points de passage','Télémétrie','Modélisation CAO']}]}
+             {chips:['Conception de drones','Pixhawk / ArduPilot','Raspberry Pi','Fusion de capteurs','Navigation par points de passage','Télémétrie','Modélisation CAO']}]},
+      {caption:`Vol de cartographie${N}: le lidar construit une carte 3D des collines et des arbres, la caméra repère les cinq aires. Puis le pilote s’entraîne.`,
+       kicker:'Deuxième partie · Apprentissage par renforcement',title:'Un drone qui cartographie une forêt',
+       body:[`En 2026, je suis revenu aux drones avec l’apprentissage par renforcement. Dans MuJoCo, un quadricoptère <b>Skydio X2</b> survole 120${N}×${N}120${N}m de collines et de forêt, puis vole seul jusqu’au point de contrôle que l’on tape.`,
+             {list:[`<b>Cartographier.</b> Un vol en aller-retour à 24${N}m${N}: un lidar orienté vers le bas cartographie le sol, les arbres et les rochers, et la caméra repère les cinq aires numérotées.`,
+                    `<b>Planifier.</b> Un A* sur cette carte, à deux niveaux${N}: 3,5${N}m au-dessus du sol entre les arbres, ou au-dessus de la canopée quand aucun passage n’existe.`,
+                    '<b>Voler.</b> Un pilote entraîné par renforcement suit l’itinéraire, évite les obstacles et se pose.']}]},
+      {caption:`«${N}Va au 3${N}»${N}: l’itinéraire planifié entre les arbres (cyan), le point que vise le pilote (jaune) et l’atterrissage sur l’aire 3.`,
+       kicker:'Le pilote appris',title:'On tape un numéro, il y vole et se pose',
+       body:[`Le pilote est un réseau de neurones entraîné avec <b>PPO</b> dans des milliers de forêts aléatoires sur deux GPU. Il perçoit <b>154 faisceaux lidar</b>, ses capteurs de mouvement et les prochains points de l’itinéraire, et envoie poussée et vitesses de rotation à un contrôleur de vol classique.`,
+             {stats:[[`377${N}M`,`pas en 19${N}min`],[`95${N}%`,'d’atterrissages à l’entraînement'],[`14${N}/${N}14`,'vols de test posés'],[`5–51${N}cm`,'du centre de l’aire']]},
+             {links:[{label:'Code sur GitHub'}]},
+             {chips:['Apprentissage par renforcement (PPO)','MuJoCo','Cartographie lidar','Atterrissage autonome']}]}
     ]
   },
   veggie:{
@@ -174,6 +188,47 @@ export const books={
        body:['La conception a été publiée dans un article en premier auteur, <i>Design and fabrication of low-cost prosthetic arm</i>, dans AIP Conference Proceedings (2024), et déposée sous la <b>demande de brevet indien 202311042415</b>.',
              {list:['<b>Conception mécanique</b> des doigts, du pouce et de l’avant-bras en CAO.',`<b>Électronique</b>${N}: conditionnement du signal EMG et commande des servomoteurs.`,'<b>Firmware</b> qui transforme l’activité musculaire en préhension.']},
              {chips:['Robotique médicale','Modélisation CAO','Impression 3D','Mesure EMG','Conditionnement de signal','Commande de servomoteurs']}]}
+    ]
+  },
+  handover:{
+    title:'Passage entre deux bras',subtitle:'Apprentissage par renforcement en simulation · 2026',
+    coverAlt:'Deux bras robotiques noirs au-dessus d’une table en bois, l’un tenant un bloc rouge',
+    spreads:[
+      {caption:`La scène${N}: deux bras, un bloc. Puis 8${N}192 copies s’entraînent en même temps sur un seul GPU.`,
+       kicker:'Le projet',title:'Deux bras, un bloc, aucune démonstration',
+       body:['Deux bras robotiques apprennent seuls, par essais et erreurs, à <b>saisir un bloc, le passer d’un bras à l’autre en l’air et le poser sur une cible</b>.',
+             'Personne ne leur montre comment. Le seul professeur est une récompense, et les bras s’exercent dans des milliers de copies simulées à la fois.',
+             {specs:[['Robots','Deux bras ViperX 300 S (ALOHA)'],['Simulateur','MuJoCo MJX + JAX'],['Algorithme','PPO'],['Mondes parallèles',`8${N}192 sur un GPU`]]}]},
+      {caption:`Accéléré de l’entraînement${N}: pas, temps d’entraînement et taux de réussite mesuré à chaque point de contrôle.`,
+       kicker:'L’apprentissage',title:`Des gestes au hasard à 89${N}%`,
+       body:[`Les premiers essais sont aléatoires${N}: prises ratées et blocs lâchés. Les premiers passages apparaissent vers 20${N}millions de pas. À 33${N}millions, chaque essai réussit le passage.`,
+             {stats:[[`50,1${N}M`,'pas de simulation'],[`41${N}min`,'sur une RTX A4000'],[`100${N}%`,'réussissent le passage'],[`89${N}%`,'posent le bloc sur la cible']]},
+             `Testé sur 256 essais. «${N}Posé${N}» signifie à moins de 5${N}cm de la cible, et maintenu pendant la dernière seconde.`]},
+      {caption:`La politique apprise${N}: saisir, passer, lâcher, poser.`,
+       kicker:'Ce que j’ai appris',title:'Tout se joue dans la récompense',
+       body:[`Mon premier essai utilisait deux bras Franka et ma propre récompense. L’agent trouvait sans cesse des raccourcis${N}:`,
+             {list:[`Il saisissait la barre sans la soulever${N}: la prise seule rapportait déjà.`,'Il basculait la barre par un bout pour simuler un levage.','Il tenait la barre à plat, toujours posée.']},
+             `Ce qui a marché${N}: la récompense de la tâche de passage de MuJoCo Playground (DeepMind), qui ne paie que les <b>nouveaux progrès</b>. Rester immobile ne rapporte rien.`,
+             {links:[{label:'Code sur GitHub'}]},
+             {chips:['Apprentissage par renforcement (PPO)','Conception de la récompense','MuJoCo MJX','Manipulation à deux bras']}]}
+    ]
+  },
+  g1:{
+    title:'Humanoïde${N}: marcher, puis courir'.replace('${N}',N),subtitle:'Unitree G1 · apprentissage par renforcement en simulation · 2026',
+    coverAlt:'L’humanoïde Unitree G1 courant dans une allée bordée d’arbres',
+    spreads:[
+      {caption:`Pas 0${N}: il tombe tout de suite. Puis essai après essai au fil de l’entraînement, jusqu’à ce qu’il marche. Activez le son pour la narration (en anglais).`,
+       kicker:'Le projet',title:'Un humanoïde qui a appris seul à marcher',
+       body:[`Dans MuJoCo, un humanoïde <b>Unitree G1</b> apprend à marcher par renforcement, en partant de rien${N}: au pas 0, il tombe tout de suite.`,
+             'Il est récompensé quand il suit la vitesse demandée et reste debout. De petites poussées latérales pendant l’entraînement lui apprennent à se rattraper.',
+             {stats:[[`96${N}M`,'pas d’entraînement'],[`42${N}min`,'sur deux GPU'],[`49${N}/${N}49`,'robots de test restés debout'],[`0,75${N}m/s`,'vitesse de marche']]}]},
+      {caption:`Apprendre à courir${N}: ce qui a changé, le moment où les deux pieds quittent le sol, et la course à pleine vitesse.`,
+       kicker:'Deuxième partie',title:'De la marche à la course',
+       body:[`Parti du robot qui marchait, pas de zéro, j’ai changé ses consignes${N}:`,
+             {list:[`<b>Vitesse maximale</b> 1 → 4${N}m/s.`,'<b>Cadence</b> 1,4 → 2,5 pas par seconde.',`<b>Lever de pied</b> 15 → 25${N}cm.`,'Un bonus quand <b>les deux pieds quittent le sol</b>, pour une vraie course.']},
+             {stats:[[`2,1${N}m/s`,`7,5${N}km/h, 3× sa marche`],[`24–27${N}%`,'du temps en l’air'],['0','chute en test']]},
+             `Environ 90${N}millions de pas de plus, en trois étapes${N}; les 46${N}derniers ont donné la vraie course.`,
+             {chips:['Apprentissage par renforcement (PPO)','Locomotion à pattes','Façonnage de la récompense','Robots humanoïdes']}]}
     ]
   }
 };

@@ -6,6 +6,7 @@ import {makeJourney} from './journey.js';
 import {finishModel} from './finish.js';
 import {lightKit} from './lights.js';
 import {t,colon,onLang} from './i18n.js';
+import {track,allRequested,settled,reveal} from './loading.js';
 const LAB_MARGIN=32; // the blurred lab canvas overhangs the viewport so its soft edge stays offscreen
 const v=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
 const clamp=n=>Math.min(1,Math.max(0,n));
@@ -79,6 +80,8 @@ export async function startStudio(pins,timeline={}){
   rim.position.set(2,2,-2);
   hero.add(rim);
   const loader=new T.GLTFLoader();
+  // Every model request feeds the loading screen's counter.
+  const rawLoad=loader.loadAsync.bind(loader);loader.loadAsync=(...a)=>track(rawLoad(...a));
   // Project models are shared by the lab and the workbench; each takes a clone.
   const modelLoads=new Map();
   const loadModel=file=>{if(!modelLoads.has(file))modelLoads.set(file,loader.loadAsync('./models/'+file+'.glb').then(g=>{finishModel(file,g.scene);return g;}));return modelLoads.get(file);};
@@ -155,8 +158,13 @@ export async function startStudio(pins,timeline={}){
     for(let o=first?.object;o;o=o.parent){const i=bench.models.indexOf(o);if(i>=0)return i;}
     return -1;
   }
-  canvas.addEventListener('pointermove',e=>setHover(hit(e)));
-  canvas.addEventListener('pointerleave',()=>setHover(-1));
+  // Mice report up to 1000 moves a second; test the CAD triangles at most once per frame.
+  let pendingMove=null;
+  canvas.addEventListener('pointermove',e=>{
+    if(!pendingMove)requestAnimationFrame(()=>{const m=pendingMove;pendingMove=null;if(m)setHover(hit(m));});
+    pendingMove=e;
+  });
+  canvas.addEventListener('pointerleave',()=>{pendingMove=null;setHover(-1);});
   canvas.addEventListener('click',e=>{const i=hit(e);if(i>=0)pins[i].click();});
   const getRobot=()=>robotPromise??=loadRobot(loader);
   const glassRoot=new T.Group();writing.add(glassRoot);
@@ -246,7 +254,7 @@ export async function startStudio(pins,timeline={}){
     // A language switch relabels the open card (the step objects were updated in place).
     document.addEventListener('studio:relabel',()=>showJourney(shownJourney));
     const startJourney=()=>{if(journey)return;journey=makeJourney({loadModel,getRobot,stations:timeline.journey,lights:lightKit(loader)});scene.add(journey.root);journey.root.visible=false;wake();};
-    new IntersectionObserver((entries,obs)=>{if(entries.some(e=>e.isIntersecting)){startJourney();obs.disconnect();}},{rootMargin:'120% 0px'}).observe(journeySection);
+    startJourney();
     // The year steps jump straight to that station.
     document.addEventListener('studio:journey',e=>{
       const i=e.detail?.index??0,span=Math.max(1,journeySection.offsetHeight-innerHeight);
@@ -254,6 +262,20 @@ export async function startStudio(pins,timeline={}){
       scrollTo({top:journeySection.offsetTop+p*span,behavior:reduced.matches?'instant':'smooth'});
     });
   }
+  // Load the whole site behind the loading screen: the glass writer, every bench and the
+  // journey. Then compile their shaders once, so nothing pops in or stutters on scroll.
+  startWriter();startBench();
+  if(document.fonts)track(document.fonts.ready);
+  allRequested();
+  settled().then(()=>{
+    try{
+      const parts=[workshop,writing,journey?.root].filter(Boolean),was=parts.map(p=>p.visible);
+      parts.forEach(p=>{p.visible=true;});
+      const job=renderer.compileAsync(scene,camera);   // collects programs synchronously
+      parts.forEach((p,i)=>{p.visible=was[i];});
+      return Promise.race([job,new Promise(r=>setTimeout(r,4000))]);
+    }catch(error){console.warn(error);}
+  }).catch(console.warn).finally(()=>{reveal();wake();});
   let floatTime=0, previousFrame, lastEntry, lastBenchCaption;
   let leadY=scrollY, cameraY=scrollY, lastTick;
   // Two cascaded low-pass stages, solved exactly for the frame duration.
@@ -266,12 +288,24 @@ export async function startStudio(pins,timeline={}){
   }
   function syncScroll(){leadY=cameraY=scrollY;lastTick=undefined;}
   document.addEventListener('visibilitychange',()=>{previousFrame=undefined;syncScroll();if(!document.hidden)wake();});
+  // Section positions are read once and cached: reading offsetTop every frame forces the
+  // browser to recompute layout mid-frame. Any section changing size marks them stale.
+  const L={glassTop:0,glassH:0,benchTop:0,benchH:0,aboutTop:0,jTop:0,jH:0};let layoutStale=true;
+  function measure(){
+    L.glassTop=glassSection.offsetTop;L.glassH=glassSection.offsetHeight;
+    L.benchTop=benchSection.offsetTop;L.benchH=benchSection.offsetHeight;
+    L.aboutTop=aboutSection?.offsetTop??0;L.jTop=journeySection?.offsetTop??0;L.jH=journeySection?.offsetHeight??0;
+    layoutStale=false;
+  }
+  const sizes=new ResizeObserver(()=>{layoutStale=true;wake();});
+  document.querySelectorAll('main > section, section.chapter').forEach(sec=>sizes.observe(sec));
   function render(now){
     needsFrame=false;
+    if(layoutStale)measure();
     let looking=false;
     const width=innerWidth,height=innerHeight,mobile=width<=700,ratio=width/height;
     const worldH=2*camera.position.z*Math.tan(16*Math.PI/180),worldW=worldH*ratio;
-    const target=scrollY,glassStart=glassSection.offsetTop,benchStart=benchSection.offsetTop;
+    const target=scrollY,glassStart=L.glassTop,benchStart=L.benchTop;
     const still=reduced.matches;
     const dt=lastTick===undefined?1/60:Math.min(.05,(now-lastTick)/1000);
     lastTick=now;
@@ -286,7 +320,7 @@ export async function startStudio(pins,timeline={}){
     const glassEntry=clamp((y-handoffStart)/handoffLength);
     // With the intro page between them, the glass scene hands over to the workbench
     // while that page fully covers the screen, so the bench is already in place underneath.
-    const benchEntry=aboutSection?(y>=aboutSection.offsetTop?1:0):ease((y-benchStart+height)/height);
+    const benchEntry=aboutSection?(y>=L.aboutTop?1:0):ease((y-benchStart+height)/height);
     const approach=interval(glassEntry,0,.35);
     const dissolve=interval(glassEntry,.35,.67);
     const pullback=interval(glassEntry,.67,1);
@@ -305,7 +339,7 @@ export async function startStudio(pins,timeline={}){
     hero.visible=dissolve<1||(!writer&&glassEntry<1);
     writing.visible=Boolean(writer)&&dissolve>0&&benchEntry<1;
     // The 3D story ends with the VeggieBot bench; the skills page then scrolls up over it.
-    workshop.visible=benchEntry>0&&y<benchStart+benchSection.offsetHeight;
+    workshop.visible=benchEntry>0&&y<benchStart+L.benchH;
     outgoing.hidden=!overlap;
     if(!overlap)frameCaptured=false;
     canvas.style.opacity=overlap?String(dissolve):'';
@@ -321,8 +355,8 @@ export async function startStudio(pins,timeline={}){
     if(floating&&previousFrame!==undefined)floatTime+=Math.min((now-previousFrame)/1000,.08)*(1-interval(glassEntry,0,.18));
     previousFrame=floating?now:undefined;
     // The journey diorama is on screen from when its section starts to rise until it ends.
-    const jStart=journeySection?.offsetTop??0,jSpan=Math.max(1,(journeySection?.offsetHeight??0)-height);
-    const journeyOn=Boolean(journey)&&target>jStart-height&&target<jStart+(journeySection?.offsetHeight??0);
+    const jStart=L.jTop,jSpan=Math.max(1,L.jH-height);
+    const journeyOn=Boolean(journey)&&target>jStart-height&&target<jStart+L.jH;
     // Dark rooms lit by small lamps on the workbench and the journey; a dimmer glass scene.
     setMood(workshop.visible||journeyOn?1:writing.visible?.5*dissolve:0);
     let journeyMoving=false;
@@ -364,7 +398,7 @@ export async function startStudio(pins,timeline={}){
 
       const scale=Math.min(mobile?worldW*.83:worldW*.66,1.83);
       glassRoot.scale.setScalar(scale);glassRoot.position.set(0,-.46*scale,0);
-      draw(still?1:clamp((y-glassStart)/Math.max(1,glassSection.offsetHeight-height)));
+      draw(still?1:clamp((y-glassStart)/Math.max(1,L.glassH-height)));
       const closeup=still?0:1-pullback;
       glassRoot.rotation.y=-.72*closeup;
       frameTip(writing,writer.penTip,focus,Math.pow(2.95,closeup),closeup);
@@ -374,7 +408,7 @@ export async function startStudio(pins,timeline={}){
     if(workshop.visible){
       // Three benches around the visitor: scrolling through the section turns
       // the view from the left bench to the front bench to the right bench.
-      const turnProgress=clamp((y-benchStart)/Math.max(1,benchSection.offsetHeight-height));
+      const turnProgress=clamp((y-benchStart)/Math.max(1,L.benchH-height));
       const yaw=bench.turn(turnProgress,{mobile,still});
       workshop.position.set(worldW*(1-benchEntry),0,0);
       bench.arrange({eyeZ:camera.position.z,yaw,mobile});
@@ -384,7 +418,7 @@ export async function startStudio(pins,timeline={}){
         const p=bench.anchor(i).project(camera);
         const shown=benchEntry>.95&&bench.facing(i,yaw)&&p.z<1&&Math.abs(p.x)<1.1&&Math.abs(p.y)<1.1;
         if(pin.hidden===shown)pin.hidden=!shown;
-        pin.style.left=((p.x+1)*50)+'%';pin.style.top=((-p.y+1)*50)+'%';
+        if(shown){pin.style.left=((p.x+1)*50)+'%';pin.style.top=((-p.y+1)*50)+'%';}
       });
       const stage=bench.stage(yaw);
       if(stage!==lastStage){stageItems.forEach((item,i)=>item.classList.toggle('on',i===stage));lastStage=stage;}
@@ -424,7 +458,7 @@ export async function startStudio(pins,timeline={}){
     else lastTick=undefined;
   }
   function resize(){
-    syncScroll();
+    layoutStale=true;syncScroll();
     renderer.setSize(innerWidth,innerHeight,false);
     outgoing.width=canvas.width;
     outgoing.height=canvas.height;

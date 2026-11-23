@@ -7,11 +7,12 @@ import * as T from './assets/three-runtime.js';
 import {placeKit,kitPart} from './bench-kit.js';
 import * as P from './bench-props.js';
 import {pendant} from './lights.js';
+import {makeHandover,makeG1,handoverTable} from './rl-props.js';
 
 const H=Math.PI/2, DEG=Math.PI/180, ADDITIVE=2, REPEAT=1000;
 const R=3.0, L=2.4, DEPTH=.9, TOP=.9, EYE=1.05, FLOOR=-TOP, BACK=-DEPTH/2;
-export const BENCH_YAW={left:-H,front:0,right:H};
-export const STAGES=['Robotics & electronics','Projects & prototypes','VeggieBot cell'];
+export const BENCH_YAW={left:-H,corner:-H/2,front:0,right:H};
+export const STAGES=['Robotics & electronics','Robot learning','Projects & prototypes','VeggieBot cell'];
 const lite=matchMedia('(max-width: 700px)').matches;
 const {group,box,cyl,mat,canvasTexture}=P;
 
@@ -31,19 +32,12 @@ const softShadow=new T.MeshBasicMaterial({transparent:true,depthWrite:false,map:
   f.addColorStop(0,'rgba(30,22,12,.5)');f.addColorStop(.55,'rgba(30,22,12,.2)');f.addColorStop(1,'rgba(30,22,12,0)');
   g.fillStyle=f;g.fillRect(0,0,128,128);
 })});
-const glowTexture=canvasTexture(256,256,(g)=>{
-  const f=g.createRadialGradient(128,128,10,128,128,126);
-  f.addColorStop(0,'rgba(255,190,110,.3)');f.addColorStop(.55,'rgba(255,170,80,.5)');
-  f.addColorStop(.72,'rgba(255,200,130,.9)');f.addColorStop(.8,'rgba(255,170,90,.35)');f.addColorStop(1,'rgba(255,160,80,0)');
-  g.fillStyle=f;g.fillRect(0,0,256,256);
-});
 const neonTexture=canvasTexture(256,256,(g)=>{
   const f=g.createRadialGradient(128,128,10,128,128,126);
   f.addColorStop(0,'rgba(80,240,255,.35)');f.addColorStop(.55,'rgba(60,230,255,.6)');
   f.addColorStop(.72,'rgba(170,250,255,1)');f.addColorStop(.8,'rgba(60,220,255,.4)');f.addColorStop(1,'rgba(40,200,255,0)');
   g.fillStyle=f;g.fillRect(0,0,256,256);
 });
-const WARM=new T.Color(0xffb35c),NEON=new T.Color(0x35f2ff);
 function blob(p,x,z,w,d,y=.0015){const s=new T.Mesh(new T.PlaneGeometry(w,d),softShadow);s.position.set(x,y,z);s.rotation.x=-H;s.raycast=()=>{};p.add(s);return s;}
 
 // ── Bench: 40 mm butcher-block top on a steel frame, pegboard back, shelf ──
@@ -76,15 +70,6 @@ function realModel(model,angles=[0,0,0]){
   const b=new T.Box3().setFromObject(model),c=b.getCenter(new T.Vector3()),d=b.getSize(new T.Vector3());
   model.position.set(-c.x,-b.min.y,-c.z);
   return {holder,height:d.y,width:Math.max(d.x,d.z)};
-}
-function glowify(root){
-  const swapped=new Map(),list=[];
-  root.traverse(o=>{
-    if(!o.isMesh||!o.material||!('emissive' in o.material))return;
-    if(!swapped.has(o.material)){const c=o.material.clone();c.emissive=new T.Color(0xffe2bf);c.emissiveIntensity=0;swapped.set(o.material,c);list.push(c);}
-    o.material=swapped.get(o.material);
-  });
-  return list;
 }
 
 // Robotiq 2F-85 from its ROS visual meshes; joint frames from the URDF (metres, z out of the tool).
@@ -145,6 +130,8 @@ export function makeBench({loadModel,getRobot,getArm,lights}){
   const floor=new T.Mesh(new T.PlaneGeometry(9,9),floorMat);floor.rotation.x=-H;floor.position.y=FLOOR+.001;room.add(floor);
   const tables={left:group(room,-R,0,H),front:group(room,0,-R,0),right:group(room,R,0,-H)};
   bench(tables.left);bench(tables.front);bench(tables.right,{laminate:true});
+  // The corner between the electronics and projects benches: a two-arm handover table.
+  tables.corner=group(room,-2.0,-2.0,H/2);handoverTable(tables.corner);
   const ground=group(room,0,0,0,FLOOR);
   const movers=[];
 
@@ -153,26 +140,25 @@ export function makeBench({loadModel,getRobot,getArm,lights}){
     {table:'left',x:-.92,z:.1},    // self-balancing robot
     {table:'front',x:-.38,z:.1},   // medical UAV
     {table:'right',x:-.55,z:-.12}, // VeggieBot · UR16e
-    {table:'left',x:-.5,z:.12}     // bionic arm
+    {table:'left',x:-.5,z:.12},    // bionic arm
+    {table:'corner',x:0,z:-.02},   // two-arm handover (RL)
+    {table:'right',x:.78,z:-.04}   // Unitree G1 walk → run (RL)
   ];
   const models=slotSpec.map(s=>{
     const slot=group(tables[s.table],s.x,s.z);
-    slot.userData={table:s.table,anchor:.2,glow:[]};
-    const ring=new T.Mesh(new T.PlaneGeometry(1,1),new T.MeshBasicMaterial({map:glowTexture,transparent:true,depthWrite:false,blending:ADDITIVE,toneMapped:false}));
-    ring.position.y=.004;ring.rotation.x=-H;ring.raycast=()=>{};ring.renderOrder=2;slot.add(ring);slot.userData.ring=ring;
-    // A wide soft halo, and a neon ring that takes over when the cursor is on the project.
-    const halo=ring.clone();halo.material=ring.material.clone();halo.scale.setScalar(1.8);halo.position.y=.003;slot.add(halo);slot.userData.halo=halo;
-    const neon=ring.clone();neon.material=new T.MeshBasicMaterial({map:neonTexture,transparent:true,depthWrite:false,blending:ADDITIVE,toneMapped:false,opacity:0});
-    neon.position.y=.005;slot.add(neon);slot.userData.neon=neon;slot.userData.h=0;
+    slot.userData={table:s.table,anchor:.2,h:0};
+    // The same soft cyan ring under every project, always on; it brightens under the cursor.
+    const ring=new T.Mesh(new T.PlaneGeometry(1,1),new T.MeshBasicMaterial({map:neonTexture,transparent:true,depthWrite:false,blending:ADDITIVE,toneMapped:false,opacity:.45}));
+    ring.position.y=.005;ring.rotation.x=-H;ring.raycast=()=>{};ring.renderOrder=2;slot.add(ring);slot.userData.ring=ring;
     return slot;
   });
   function present(i,object,{ring=.5,shadow=true}={}){
     const slot=models[i];slot.add(object.holder);
     slot.userData.anchor=object.height*.6;
-    slot.userData.ring.scale.setScalar(ring);slot.userData.neon.scale.setScalar(ring);slot.userData.halo.scale.setScalar(ring*1.8);
+    slot.userData.ring.scale.setScalar(ring);
     if(shadow)blob(slot,0,0,object.width*1.3,object.width*1.1);
-    slot.userData.glow=glowify(object.holder);
   }
+
 
   // Equipment, x along the bench (left→right as seen), z from back (−0.45) to front (+0.45).
   const ON=.002, MAT=.004;
@@ -208,14 +194,12 @@ export function makeBench({loadModel,getRobot,getArm,lights}){
   ];
   const RIGHT=[
     ['estop-button',-.06,.36,0],['quest3-headset',.38,.2,25],['quest-touch-l',.53,.34,-20],['quest-touch-r',.62,.3,15],
-    ['monitor',.84,-.3,-8],['keyboard',.82,.0,-4],['mouse',1.1,.03,10],['ssd',.62,-.05,20],
+    ['monitor',.95,-.12,-8,{y:FLOOR+.16}],['keyboard',.42,.12,-4,{y:FLOOR+.16}],['mouse',.68,.16,10,{y:FLOOR+.16}],
     ['medical_box',.95,BACK+.14,0,{y:.81}],['multi_cleaner_bottle',-.05,BACK+.14,0,{y:.81}],['plastic_crate_03',-.6,BACK+.14,0,{y:.81}],
-    ['plastic_crate_01',.6,-.05,0,{y:FLOOR+.16}]
+    ['plastic_crate_01',.05,-.05,0,{y:FLOOR+.16}]
   ];
   const ROOM=[
-    ['steel_frame_shelves_02',-2.42,-2.42,45],['korean_fire_extinguisher_01',-1.75,-2.85,20],
-    
-    ['cardboard_box_01',-2.6,-1.55,70],['plastic_crate_01',2.65,-1.6,-80]
+    ['cardboard_box_01',-1.45,-2.95,70],['plastic_crate_01',2.65,-1.6,-80]
   ];
 
   // Procedural items (no free model): mats, extractor, drawers, Jetson, pendant …
@@ -231,8 +215,8 @@ export function makeBench({loadModel,getRobot,getArm,lights}){
   P.filament(Ft,-.66,-.32,H,0xe0702a);P.filament(Ft,-.58,-.32,H,0x2a2a2a);
   [0xe8e8e8,0x2f62c9,0x2d7a45].forEach((c,i)=>{P.filament(Ft,-.15+i*.08,BACK+.12,H,c).position.y=.81;});
   P.lipoCharger(Ft,.74,.37,-.1);
-  P.teachPendant(Rt,.12,.24,-.35);P.jetson(Rt,.3,-.26,.2);P.netSwitch(Rt,.5,-.34,-.1);
-  P.laptop(Rt,1.0,.24,-.45);P.charuco(Rt,.12,-.4,0);
+  P.teachPendant(Rt,.12,.24,-.35);P.jetson(Rt,.3,-.26,.2);P.netSwitch(Rt,.3,BACK+.12,0).position.y=.81;
+  P.laptop(Rt,1.08,.3,-.45);P.charuco(Rt,.12,-.4,0);
   const tri=P.tripod(Rt,-.02,.1,0,.2);
   P.controlBox(Rt,-.55,-.05,0).position.y=FLOOR+.17;
   P.robotPlate(Rt,-.55,-.12);
@@ -244,6 +228,7 @@ export function makeBench({loadModel,getRobot,getArm,lights}){
   lights?.then(({SpotLight})=>{
     const xs=lite?[-.6,.6]:[-.82,0,.82];
     for(const t of [Lt,Ft,Rt])for(const x of xs)pendant(t,SpotLight,x,.05,{drop:1.05,intensity:lite?3.6:2.7,angle:lite?.72:.62,cone:!lite});
+    pendant(tables.corner,SpotLight,0,.02,{drop:1.15,cord:.5,intensity:lite?4.2:3.4,angle:.7,reach:3,cone:!lite});
   }).catch(console.warn);
   let hovered=-1,loading=false,cell=null;
   const shadowed=(list)=>list.forEach(g=>{
@@ -253,12 +238,13 @@ export function makeBench({loadModel,getRobot,getArm,lights}){
   async function load(){
     if(loading)return;loading=true;
     const opt={skipSmall:lite};
-    // First the bench the visitor sees first, then the rest.
-    placeKit(loadModel,Lt,LEFT,opt).then(shadowed).then(()=>Promise.all([
+    // Everything loads behind the loading screen, so all areas are fetched at once.
+    Promise.all([
+      placeKit(loadModel,Lt,LEFT,opt).then(shadowed),
       placeKit(loadModel,Ft,FRONT,opt).then(shadowed),
       placeKit(loadModel,Rt,RIGHT,opt).then(shadowed),
       placeKit(loadModel,ground,ROOM,opt)
-    ])).catch(console.warn);
+    ]).catch(console.warn);
     kitPart(loadModel,'realsense-d435').then(cam=>{cam.rotation.y=-H*.6;tri.head.add(cam);}).catch(console.warn);
     const corner=robotTable(ground,2.36,-2.36,-1.5*H);
     lights?.then(({SpotLight})=>pendant(corner,SpotLight,.45,.45,{drop:1.9,cord:.6,intensity:7,angle:.5,reach:4,cone:!lite})).catch(console.warn);
@@ -266,9 +252,11 @@ export function makeBench({loadModel,getRobot,getArm,lights}){
     const specs=[['robot-assembly',0,[-H,0,Math.PI],.38],['spidrone',1,[0,.2,0],.62]];
     for(const [file,i,angles,ring] of specs)
       loadModel(file).then(g=>present(i,realModel(g.scene.clone(true),angles),{ring})).catch(console.warn);
+    makeHandover(loadModel).then(h=>{present(4,h,{ring:.85,shadow:false});movers.push(h.update);}).catch(console.warn);
+    makeG1(loadModel).then(g=>{present(5,g,{ring:.42,shadow:true});movers.push(g.update);}).catch(console.warn);
     getArm().then(arm=>{if(arm){cyl(models[3],0,.01,0,.06,.02,mat(0x1d1e20,.5,.3),28);const f=realModel(arm,[0,-.4,-.08]);f.holder.position.y=.02;f.height+=.02;present(3,f,{ring:.3,shadow:false});}}).catch(console.warn);
     Promise.all([getRobot(),makeGripper(loadModel),kitPart(loadModel,'yellow_onion'),kitPart(loadModel,'wooden_cutting_board'),kitPart(loadModel,'carved_wooden_plate')])
-      .then(([r,grip,onion,board,plate])=>{cell=makeCell(models[2],r,grip,{onion,board,plate});present(2,{holder:cell.holder,height:1.05,width:.5},{ring:1.5,shadow:false});})
+      .then(([r,grip,onion,board,plate])=>{cell=makeCell(models[2],r,grip,{onion,board,plate});present(2,{holder:cell.holder,height:1.05,width:.5},{ring:1.1,shadow:false});})
       .catch(console.warn);
   }
 
@@ -330,27 +318,20 @@ export function makeBench({loadModel,getRobot,getArm,lights}){
     return {holder,update};
   }
 
-  const tint=new T.Color();
   function update(t){
     movers.forEach(f=>f(t));
     cell?.update(t);
     models.forEach((slot,i)=>{
       const u=slot.userData,pulse=.5+.5*Math.sin(t*2.2+i*1.3);
-      u.h+=((i===hovered?1:0)-u.h)*.16;const h=u.h;
-      u.ring.material.opacity=(.72+.28*pulse)*(1-h);
-      u.halo.material.opacity=(.22+.14*pulse)*(1-h*.6);
-      u.neon.material.opacity=h*(.9+.1*pulse);
-      // Projects glow faintly warm; under the cursor they turn neon cyan.
-      tint.copy(WARM).lerp(NEON,h);
-      const glow=(.07+.06*pulse)*(1-h)+.5*h;
-      for(const m of u.glow){m.emissive.copy(tint);m.emissiveIntensity=glow;}
+      u.h+=((i===hovered?1:0)-u.h)*.16;
+      u.ring.material.opacity=.42+.06*pulse+.45*u.h;
     });
   }
   // Scroll progress → yaw in degrees, with a slow pan across each bench.
   function turn(p,{mobile=false,still=false}={}){
-    if(still)return p<.3?-90:p<.7?0:90;
-    const pan=mobile?16:5;
-    const rows=[[0,-90-pan],[.2,-90+pan],[.4,-pan],[.6,pan],[.8,90-pan],[1,90+pan]];
+    if(still)return p<.2?-90:p<.42?-45:p<.72?0:90;
+    const pan=mobile?16:5,c=mobile?8:3;
+    const rows=[[0,-90-pan],[.15,-90+pan],[.27,-45-c],[.37,-45+c],[.5,-pan],[.64,pan],[.84,90-pan],[1,90+pan]];
     p=Math.min(1,Math.max(0,p));
     for(let i=1;i<rows.length;i++)if(p<=rows[i][0]){const a=rows[i-1],b=rows[i],k=(p-a[0])/(b[0]-a[0]);return a[1]+(b[1]-a[1])*k*k*(3-2*k);}
     return rows[rows.length-1][1];
@@ -365,6 +346,6 @@ export function makeBench({loadModel,getRobot,getArm,lights}){
     setHover:i=>{hovered=i;},
     facing:(i,yaw)=>Math.abs(yaw*DEG-BENCH_YAW[models[i].userData.table])<.42,
     anchor:i=>models[i].localToWorld(anchorPoint.set(0,models[i].userData.anchor,0)),
-    stage:yaw=>yaw<-45?0:yaw<45?1:2
+    stage:yaw=>yaw<-67?0:yaw<-22?1:yaw<45?2:3
   };
 }

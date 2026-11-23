@@ -30,6 +30,7 @@ function start(){
   const v=SPEED*innerHeight,T=D/v+Math.min(RAMP,D/v);
   run={from,D,v,T,elapsed:0,last:null,frame:0};
   document.documentElement.classList.add('autoscrolling');
+  holdInput(true);
   const step=now=>{
     if(!run)return;
     // Advance by real frame time (capped), so a hidden tab pauses instead of jumping.
@@ -46,6 +47,7 @@ function stop(){
   if(!run)return;
   cancelAnimationFrame(run.frame);run=null;
   document.documentElement.classList.remove('autoscrolling');
+  holdInput(false);
 }
 
 addEventListener('scroll',()=>{
@@ -59,17 +61,23 @@ addEventListener('scroll',()=>{
 // Note the visitor's own downward scrolling (that is what starts the glide), and
 // while gliding swallow every scroll input so nothing can interrupt it.
 const block=e=>{if(run&&e.cancelable){e.preventDefault();e.stopPropagation();}};
-addEventListener('wheel',e=>{if(!run){if(e.deltaY>0)intent=performance.now();return;}block(e);},{passive:false,capture:true});
+// Listening to wheel/touchmove with passive:false makes the browser wait for JavaScript
+// before every scroll step, so the blocking listeners exist only during the glide.
+function holdInput(on){
+  const f=on?addEventListener:removeEventListener;
+  f('wheel',block,{passive:false,capture:true});f('touchmove',block,{passive:false,capture:true});
+}
+addEventListener('wheel',e=>{if(!run&&e.deltaY>0)intent=performance.now();},{passive:true});
 addEventListener('keydown',e=>{
   if(!run){if(['ArrowDown','PageDown',' ','Spacebar'].includes(e.key))intent=performance.now();return;}
   if(['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' ','Spacebar','Tab'].includes(e.key))block(e);
 },{capture:true});
 addEventListener('touchstart',e=>{touchY=e.touches[0]?.clientY??null;},{passive:true});
 addEventListener('touchmove',e=>{
-  if(run){block(e);return;}
+  if(run)return;
   const y=e.touches[0]?.clientY;if(y==null||touchY==null)return;
   if(y-touchY<-4)intent=performance.now();
-},{passive:false,capture:true});
+},{passive:true});
 for(const type of ['pointerdown','mousedown','click'])addEventListener(type,e=>{if(run&&e.target.closest?.('.scroll-rail, a, button'))block(e);},{capture:true});
 document.addEventListener('visibilitychange',()=>{if(run)run.last=null;});
 document.addEventListener('studio:glide',()=>{if(!run&&!reduced.matches){armed=false;start();}});

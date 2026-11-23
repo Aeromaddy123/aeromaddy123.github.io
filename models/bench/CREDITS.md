@@ -35,6 +35,12 @@ led, pin-header. Changes: converted from STEP.
 - quest-touch-l / quest-touch-r — WebXR Input Profiles (meta-quest-touch-plus), MIT,
   https://github.com/immersive-web/webxr-input-profiles. Trademarks belong to their owners.
 
+## MuJoCo Menagerie (Google DeepMind) — reinforcement-learning projects
+https://github.com/google-deepmind/mujoco_menagerie
+- unitree-g1 — Unitree G1 humanoid (`unitree_g1`), BSD-3-Clause, © Unitree Robotics. Licence: models/bench/LICENSE-unitree-g1.txt
+- aloha — ALOHA two-arm ViperX 300 S setup (`aloha`), BSD-3-Clause, © Trossen Robotics. Licence: models/bench/LICENSE-aloha.txt
+Changes: visual meshes exported per body with tools/mjcf2gltf.py and simplified by vertex clustering. The motion on the workbench is hand-keyed.
+
 ## Sketchfab — CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
 Rescaled to the real products' dimensions, decimated and compressed; colours unchanged.
 
